@@ -1,4 +1,4 @@
-<!-- src/App.vue -->
+<!-- src/App.vue (version corrigée) -->
 <template>
   <div id="app">
     <header class="app-header">
@@ -182,6 +182,9 @@ export default {
 }
 </script>
 
+<style>
+/* Gardez votre style CSS existant ici */
+</style>
 <style>
 * {
   margin: 0;

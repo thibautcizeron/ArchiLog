@@ -66,7 +66,12 @@
     </div>
   </template>
   
+  // Mise à jour de SellView.vue
   <script>
+  import cardService from '../services/card.service';
+  import marketService from '../services/market.service';
+  import authStore from '../store/auth.store';
+  
   export default {
     name: 'SellView',
     data() {
@@ -75,7 +80,68 @@
         category: '',
         description: '',
         price: null,
-        photos: []
+        rarity: 'Common',
+        photos: [],
+        userCards: [],
+        selectedCard: null,
+        loading: false,
+        error: null,
+        success: null
+      }
+    },
+    created() {
+      if (authStore.isAuthenticated()) {
+        this.fetchUserCards();
+      } else {
+        this.$router.push('/');
+      }
+    },
+    methods: {
+      async fetchUserCards() {
+        this.loading = true;
+        try {
+          this.userCards = await cardService.getUserCards();
+        } catch (error) {
+          this.error = 'Failed to fetch your cards. Please try again.';
+          console.error('Error fetching user cards:', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+      selectCard(card) {
+        this.selectedCard = card;
+        this.productName = card.name;
+        this.category = card.type;
+        this.description = card.description;
+        this.rarity = card.rarity;
+      },
+      async sellCard() {
+        if (!this.selectedCard || !this.price) {
+          this.error = 'Please select a card and set a price.';
+          return;
+        }
+        
+        this.loading = true;
+        try {
+          await marketService.sellCard(this.selectedCard.id, this.price);
+          this.success = 'Card listed for sale successfully!';
+          this.resetForm();
+          this.fetchUserCards(); // Refresh user cards
+        } catch (error) {
+          this.error = 'Failed to list card for sale. Please try again.';
+          console.error('Error selling card:', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+      resetForm() {
+        this.productName = '';
+        this.category = '';
+        this.description = '';
+        this.price = null;
+        this.rarity = 'Common';
+        this.photos = [];
+        this.selectedCard = null;
       }
     }
   }

@@ -43,14 +43,94 @@
     </div>
   </template>
   
+  // Mise à jour de BuyView.vue
   <script>
+  import marketService from '../services/market.service';
+  import cardService from '../services/card.service';
+  import authStore from '../store/auth.store';
+  
   export default {
     name: 'BuyView',
     data() {
       return {
         category: '',
         price: 500,
-        search: ''
+        search: '',
+        listings: [],
+        loading: false,
+        error: null,
+        success: null
+      }
+    },
+    created() {
+      this.fetchListings();
+    },
+    computed: {
+      filteredListings() {
+        let results = this.listings;
+        
+        if (this.category) {
+          results = results.filter(listing => listing.type === this.category);
+        }
+        
+        if (this.price) {
+          results = results.filter(listing => listing.price <= this.price);
+        }
+        
+        if (this.search) {
+          const query = this.search.toLowerCase();
+          results = results.filter(listing => 
+            listing.name.toLowerCase().includes(query) || 
+            listing.description.toLowerCase().includes(query)
+          );
+        }
+        
+        return results;
+      }
+    },
+    methods: {
+      async fetchListings() {
+        this.loading = true;
+        try {
+          const listings = await marketService.getAllListings();
+          // For each listing, fetch the card details
+          this.listings = [];
+          for (const listing of listings) {
+            try {
+              const card = await cardService.getCardById(listing.cardId);
+              this.listings.push({
+                ...card,
+                price: listing.price,
+                sellerId: listing.sellerId
+              });
+            } catch (error) {
+              console.error(`Error fetching card ${listing.cardId}:`, error);
+            }
+          }
+        } catch (error) {
+          this.error = 'Failed to fetch listings. Please try again.';
+          console.error('Error fetching listings:', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+      async buyCard(cardId) {
+        if (!authStore.isAuthenticated()) {
+          this.error = 'Please login to buy cards';
+          return;
+        }
+        
+        this.loading = true;
+        try {
+          await marketService.buyCard(cardId);
+          this.success = 'Card purchased successfully!';
+          this.fetchListings(); // Refresh listings
+        } catch (error) {
+          this.error = 'Failed to buy card. Please try again.';
+          console.error('Error buying card:', error);
+        } finally {
+          this.loading = false;
+        }
       }
     }
   }

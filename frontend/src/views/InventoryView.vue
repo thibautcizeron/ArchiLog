@@ -104,100 +104,117 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'InventoryView',
-    data() {
-      return {
-        activeTab: 'all',
-        searchQuery: '',
-        categoryFilter: '',
-        allItems: [
-          { 
-            name: 'Smartphone XYZ', 
-            category: 'electronics', 
-            price: 350, 
-            status: 'available',
-            color: '#7966f6'
-          },
-          { 
-            name: 'Ordinateur portable', 
-            category: 'electronics', 
-            price: 800, 
-            status: 'available',
-            color: '#4a90e2'
-          },
-          { 
-            name: 'Casque audio', 
-            category: 'electronics', 
-            price: 120, 
-            status: 'sold',
-            color: '#e74c3c'
-          },
-          { 
-            name: 'T-shirt design', 
-            category: 'clothing', 
-            price: 25, 
-            status: 'available',
-            color: '#2ecc71'
-          },
-          { 
-            name: 'Table de salon', 
-            category: 'home', 
-            price: 200, 
-            status: 'sold',
-            color: '#f39c12'
-          }
-        ]
+  // Mise à jour de InventoryView.vue
+<script>
+import cardService from '../services/card.service';
+import authStore from '../store/auth.store';
+
+export default {
+  name: 'InventoryView',
+  data() {
+    return {
+      activeTab: 'all',
+      searchQuery: '',
+      categoryFilter: '',
+      allItems: [],
+      loading: false,
+      error: null
+    }
+  },
+  created() {
+    this.fetchUserCards();
+  },
+  computed: {
+    availableItems() {
+      return this.allItems.filter(item => item.status === 'available');
+    },
+    soldItems() {
+      return this.allItems.filter(item => item.status === 'sold');
+    },
+    filteredItems() {
+      let items = this.allItems;
+      
+      // Filter by tab
+      if (this.activeTab === 'available') {
+        items = this.availableItems;
+      } else if (this.activeTab === 'sold') {
+        items = this.soldItems;
+      }
+      
+      // Filter by category
+      if (this.categoryFilter) {
+        items = items.filter(item => item.category === this.categoryFilter);
+      }
+      
+      // Filter by search query
+      if (this.searchQuery.trim()) {
+        const query = this.searchQuery.toLowerCase();
+        items = items.filter(item => 
+          item.name.toLowerCase().includes(query) || 
+          this.getCategoryName(item.category).toLowerCase().includes(query)
+        );
+      }
+      
+      return items;
+    }
+  },
+  methods: {
+    async fetchUserCards() {
+      if (!authStore.isAuthenticated()) {
+        this.$router.push('/');
+        return;
+      }
+      
+      this.loading = true;
+      try {
+        const cards = await cardService.getUserCards();
+        // Transform cards to match the expected format
+        this.allItems = cards.map(card => ({
+          id: card.id,
+          name: card.name,
+          category: card.type,
+          price: 100, // Set a default price or get it from somewhere else
+          status: 'available',
+          color: this.getColorByRarity(card.rarity)
+        }));
+      } catch (error) {
+        this.error = 'Failed to fetch cards. Please try again.';
+        console.error('Error fetching cards:', error);
+      } finally {
+        this.loading = false;
       }
     },
-    computed: {
-      availableItems() {
-        return this.allItems.filter(item => item.status === 'available');
-      },
-      soldItems() {
-        return this.allItems.filter(item => item.status === 'sold');
-      },
-      filteredItems() {
-        let items = this.allItems;
-        
-        // Filter by tab
-        if (this.activeTab === 'available') {
-          items = this.availableItems;
-        } else if (this.activeTab === 'sold') {
-          items = this.soldItems;
-        }
-        
-        // Filter by category
-        if (this.categoryFilter) {
-          items = items.filter(item => item.category === this.categoryFilter);
-        }
-        
-        // Filter by search query
-        if (this.searchQuery.trim()) {
-          const query = this.searchQuery.toLowerCase();
-          items = items.filter(item => 
-            item.name.toLowerCase().includes(query) || 
-            this.getCategoryName(item.category).toLowerCase().includes(query)
-          );
-        }
-        
-        return items;
-      }
+    getColorByRarity(rarity) {
+      const colors = {
+        'Common': '#7966f6',
+        'Uncommon': '#4a90e2',
+        'Rare': '#e74c3c',
+        'Epic': '#2ecc71',
+        'Legendary': '#f39c12'
+      };
+      return colors[rarity] || '#7966f6';
     },
-    methods: {
-      getCategoryName(category) {
-        const categories = {
-          'electronics': 'Électronique',
-          'clothing': 'Vêtements',
-          'home': 'Maison',
-          'sports': 'Sports & Loisirs'
-        };
-        return categories[category] || category;
-      }
+    getCategoryName(category) {
+      const categories = {
+        'electronics': 'Électronique',
+        'clothing': 'Vêtements',
+        'home': 'Maison',
+        'sports': 'Sports & Loisirs',
+        'Dragon': 'Dragon',
+        'Spirit': 'Esprit',
+        'Mage': 'Mage',
+        'Golem': 'Golem',
+        'Beast': 'Bête',
+        'Elf': 'Elfe',
+        'Fairy': 'Fée',
+        'Assassin': 'Assassin',
+        'Knight': 'Chevalier'
+      };
+      return categories[category] || category;
     }
   }
-  </script>
+}
+</script>
   
   <style scoped>
   .page-container {
