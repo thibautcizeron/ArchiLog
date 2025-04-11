@@ -1,0 +1,9 @@
+FROM maven:3.9.6-eclipse-temurin-21 AS dev
+WORKDIR /app
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+COPY mvnw.cmd .
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
+CMD ["./mvnw", "spring-boot:run"]

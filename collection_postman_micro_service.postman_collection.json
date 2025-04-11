@@ -1,0 +1,1456 @@
+{
+	"info": {
+		"_postman_id": "4dc3c216-fb18-4da3-9c8c-3e46203fb2af",
+		"name": "collection_postman_micro_service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33552647"
+	},
+	"item": [
+		{
+			"name": "card-service",
+			"item": [
+				{
+					"name": "post 10 cards",
+					"item": [
+						{
+							"name": "POST /api/cards - Fire Dragon",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Fire Dragon\",\n    \"description\": \"Breathes fire\",\n    \"rarity\": \"Rare\",\n    \"type\": \"Dragon\",\n    \"imageUrl\": \"https://example.com/fire-dragon.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Water Spirit",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Water Spirit\",\n    \"description\": \"Controls water\",\n    \"rarity\": \"Common\",\n    \"type\": \"Spirit\",\n    \"imageUrl\": \"https://example.com/water-spirit.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Dark Mage",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dark Mage\",\n    \"description\": \"Uses dark magic\",\n    \"rarity\": \"Epic\",\n    \"type\": \"Mage\",\n    \"imageUrl\": \"https://example.com/dark-mage.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Earth Golem",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Earth Golem\",\n    \"description\": \"Strong and solid\",\n    \"rarity\": \"Uncommon\",\n    \"type\": \"Golem\",\n    \"imageUrl\": \"https://example.com/earth-golem.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Stone Titan",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Stone Titan\",\n    \"description\": \"Massive strength\",\n    \"rarity\": \"Legendary\",\n    \"type\": \"Giant\",\n    \"imageUrl\": \"https://example.com/stone-titan.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Thunder Wolf",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Thunder Wolf\",\n    \"description\": \"Fast and furious\",\n    \"rarity\": \"Rare\",\n    \"type\": \"Beast\",\n    \"imageUrl\": \"https://example.com/thunder-wolf.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Forest Elf",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Forest Elf\",\n    \"description\": \"Protector of the woods\",\n    \"rarity\": \"Common\",\n    \"type\": \"Elf\",\n    \"imageUrl\": \"https://example.com/forest-elf.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Wind Fairy",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Wind Fairy\",\n    \"description\": \"Light and quick\",\n    \"rarity\": \"Common\",\n    \"type\": \"Fairy\",\n    \"imageUrl\": \"https://example.com/wind-fairy.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Shadow Assassin",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Shadow Assassin\",\n    \"description\": \"Stealthy killer\",\n    \"rarity\": \"Epic\",\n    \"type\": \"Assassin\",\n    \"imageUrl\": \"https://example.com/shadow-assassin.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /api/cards - Holy Knight",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Holy Knight\",\n    \"description\": \"Defender of light\",\n    \"rarity\": \"Uncommon\",\n    \"type\": \"Knight\",\n    \"imageUrl\": \"https://example.com/holy-knight.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}"
+								},
+								"url": {
+									"raw": "localhost:8082/api/cards",
+									"host": [
+										"localhost"
+									],
+									"port": "8082",
+									"path": [
+										"api",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "card",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/cards",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "card",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Fire Dragon\",\n    \"description\": \"A powerful fire-breathing dragon\",\n    \"rarity\": \"Rare\",\n    \"type\": \"Dragon\",\n    \"imageUrl\": \"https://example.com/fire-dragon.png\",\n    \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/cards",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "card with id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/cards/6e616820-d6ea-4178-afd6-393d3ccb714d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards",
+								"6e616820-d6ea-4178-afd6-393d3ccb714d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "card",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n  \"name\": \"Water Phoenix\",\r\n  \"description\": \"A reborn phoenix with healing water powers\",\r\n  \"rarity\": \"Epic\",\r\n  \"type\": \"Bird\",\r\n  \"imageUrl\": \"https://example.com/water-phoenix.png\",\r\n  \"userId\": \"123e4567-e89b-12d3-a456-426614174000\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/cards/64518b6e-7500-4d32-b125-81f9adadb676",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards",
+								"64518b6e-7500-4d32-b125-81f9adadb676"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "card with id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/cards/57e0b3dd-596e-4436-baae-2a8999fde6d7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards",
+								"57e0b3dd-596e-4436-baae-2a8999fde6d7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "card with keywords",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/cards/search?keyword=dragon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "dragon"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "card filtered",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/cards/filter?rarity=Rare&type=Dragon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "rarity",
+									"value": "Rare"
+								},
+								{
+									"key": "type",
+									"value": "Dragon"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "card sorted",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/cards/sort?sortBy=name&ascending=true",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards",
+								"sort"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "name"
+								},
+								{
+									"key": "ascending",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "plein de cards",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/api/cards",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE All Cards (via tests)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let cards = pm.response.json();",
+									"if (Array.isArray(cards)) {",
+									"    cards.forEach(card => {",
+									"        pm.sendRequest({",
+									"            url: `http://localhost:8082/api/cards/${card.id}`,",
+									"            method: 'DELETE'",
+									"        }, function (err, res) {",
+									"            console.log(`Deleted card: ${card.id}`);",
+									"        });",
+									"    });",
+									"} else {",
+									"    console.log('No cards to delete.');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/api/cards",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"cards"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth-service",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.token) {",
+									"    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+									"    pm.collectionVariables.set(\"user_id\", jsonData.userId);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"robz2\",\n    \"email\": \"robz@toto.com\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Créer un nouvel utilisateur"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"robz2\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Connexion d'un utilisateur existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/auth/validate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"auth",
+								"validate"
+							]
+						},
+						"description": "Valider un token JWT"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Déconnexion d'un utilisateur"
+					},
+					"response": []
+				},
+				{
+					"name": "User Service - Get User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/users/ff87964f-e456-4af3-9d69-b909e83f57a5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"users",
+								"ff87964f-e456-4af3-9d69-b909e83f57a5"
+							]
+						},
+						"description": "Récupérer les informations d'un utilisateur avec l'ID stocké dans les variables"
+					},
+					"response": []
+				},
+				{
+					"name": "User Service - Search Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/users/search?keyword=test",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "test"
+								}
+							]
+						},
+						"description": "Rechercher des utilisateurs par mot-clé"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user-service",
+			"item": [
+				{
+					"name": "post 10 users",
+					"item": [
+						{
+							"name": "Create user_1",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_1\", \"email\": \"user1@example.com\", \"password\": \"pass123\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_2",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_2\", \"email\": \"user2@example.com\", \"password\": \"pass234\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_3",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_3\", \"email\": \"user3@example.com\", \"password\": \"pass345\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_4",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_4\", \"email\": \"user4@example.com\", \"password\": \"pass456\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_5",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_5\", \"email\": \"user5@example.com\", \"password\": \"pass567\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_6",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_6\", \"email\": \"user6@example.com\", \"password\": \"pass678\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_7",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_7\", \"email\": \"user7@example.com\", \"password\": \"pass789\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_8",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_8\", \"email\": \"user8@example.com\", \"password\": \"pass890\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_9",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_9\", \"email\": \"user9@example.com\", \"password\": \"pass901\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create user_10",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"username\": \"user_10\", \"email\": \"user10@example.com\", \"password\": \"pass012\" }"
+								},
+								"url": {
+									"raw": "http://localhost:8084/api/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8084",
+									"path": [
+										"api",
+										"users"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Créer un utilisateur",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"secret\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8084/api/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Récupérer tous les utilisateurs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8084/api/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Récupérer un utilisateur par ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8084/api/users/ed9f6176-0731-47a0-9e98-52adba0f29f6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"users",
+								"ed9f6176-0731-47a0-9e98-52adba0f29f6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mettre à jour un utilisateur",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"johnupdated\",\n  \"email\": \"john.new@example.com\",\n  \"password\": \"newpass\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8084/api/users/ed9f6176-0731-47a0-9e98-52adba0f29f6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"users",
+								"ed9f6176-0731-47a0-9e98-52adba0f29f6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer un utilisateur",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8084/api/users/ed9f6176-0731-47a0-9e98-52adba0f29f6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"users",
+								"ed9f6176-0731-47a0-9e98-52adba0f29f6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rechercher des utilisateurs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8084/api/users/search?keyword=user_2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "user_2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const users = pm.response.json();",
+									"",
+									"users.forEach(user => {",
+									"    const deleteRequest = {",
+									"        url: `http://localhost:8084/api/users/${user.id}` ,",
+									"        method: 'DELETE'",
+									"    };",
+									"    pm.sendRequest(deleteRequest, (err, res) => {",
+									"        if (err) {",
+									"            console.error('Erreur suppression:', err);",
+									"        } else {",
+									"            console.log(`Supprimé: ${user.username}`);",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8084/api/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8084",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "market-service",
+			"item": [
+				{
+					"name": "Sell Card",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cardId\": \"9e65ff64-d975-4c4b-ad01-be455ebfa37a\",\n  \"sellerId\": \"6d6f8b3b-f60b-41ce-8dc2-5490198f98e0\",\n  \"price\": 100\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8085/api/market/sell",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"api",
+								"market",
+								"sell"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buy Card",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/api/market/buy/9e65ff64-d975-4c4b-ad01-be455ebfa37a?buyerId=afca0bf9-fd81-4e5f-accc-8b97d3c4676d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"api",
+								"market",
+								"buy",
+								"9e65ff64-d975-4c4b-ad01-be455ebfa37a"
+							],
+							"query": [
+								{
+									"key": "buyerId",
+									"value": "afca0bf9-fd81-4e5f-accc-8b97d3c4676d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/api/market/transactions/6d6f8b3b-f60b-41ce-8dc2-5490198f98e0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"api",
+								"market",
+								"transactions",
+								"6d6f8b3b-f60b-41ce-8dc2-5490198f98e0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir toutes les annonces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/api/market",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"api",
+								"market"
+							]
+						},
+						"description": "Récupère toutes les annonces de cartes en vente"
+					},
+					"response": []
+				},
+				{
+					"name": "Effacer toutes les transactions",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/api/market/transactions/clear",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"api",
+								"market",
+								"transactions",
+								"clear"
+							]
+						},
+						"description": "Vide complètement la table des transactions pour faciliter le débogage"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "game-room",
+			"item": []
+		},
+		{
+			"name": "room-service",
+			"item": []
+		},
+		{
+			"name": "front",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5173",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5173"
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "auth_token",
+			"value": ""
+		},
+		{
+			"key": "user_id",
+			"value": ""
+		}
+	]
+}
