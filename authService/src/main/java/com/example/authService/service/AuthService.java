@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,60 +25,23 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
 
-    private final String userServiceUrl = "http://user-service:8080/api/users";
-
-    public Optional<AuthResponseDTO> login(LoginRequestDTO loginRequest) {
-        try {
-            ResponseEntity<UserDTO[]> response = restTemplate.getForEntity(
-                    userServiceUrl + "/search?keyword=" + loginRequest.username(),
-                    UserDTO[].class
-            );
-
-            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-                return Optional.empty();
-            }
-
-            for (UserDTO user : response.getBody()) {
-                if (user.username().equals(loginRequest.username()) &&
-                        passwordEncoder.matches(loginRequest.password(), user.password())) {
-
-                    String token = jwtService.generateToken(user.id());
-
-                    authRepository.findByUserIdAndActive(user.id(), true)
-                            .ifPresent(authRepository::delete);
-
-                    Auth session = Auth.builder()
-                            .userId(user.id())
-                            .token(token)
-                            .active(true)
-                            .expiresAt(System.currentTimeMillis() + 86400000)
-
-                            .build();
-
-                    authRepository.save(session);
-
-                    return Optional.of(new AuthResponseDTO(token, user.id(), user.username()));
-                }
-            }
-
-            return Optional.empty();
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la communication avec userService: " + e.getMessage());
-            return Optional.empty();
-        }
-    }
+    private final String userServiceUrl = "http://user-service:8084/api/users";
 
     public Optional<AuthResponseDTO> register(RegisterRequestDTO registerRequest) {
         try {
+            // Encoder le mot de passe avant de l'envoyer
             String hashedPassword = passwordEncoder.encode(registerRequest.password());
 
+            // Créer un DTO pour l'utilisateur à envoyer au service User
             UserDTO newUser = new UserDTO(
                     null,
                     registerRequest.username(),
                     registerRequest.email(),
-                    hashedPassword
+                    hashedPassword,
+                    "USER"
             );
 
+            // Envoyer la requête au service User pour créer l'utilisateur
             HttpEntity<UserDTO> request = new HttpEntity<>(newUser);
             ResponseEntity<UserDTO> response = restTemplate.postForEntity(
                     userServiceUrl,
@@ -92,16 +56,65 @@ public class AuthService {
             UserDTO createdUser = response.getBody();
             String token = jwtService.generateToken(createdUser.id());
 
+            // Créer une session d'authentification
             Auth session = Auth.builder()
                     .userId(createdUser.id())
                     .token(token)
                     .active(true)
-                    .expiresAt(System.currentTimeMillis() + 86400000)
+                    .expiresAt(System.currentTimeMillis() + 86400000) // 24 heures
                     .build();
 
             authRepository.save(session);
 
             return Optional.of(new AuthResponseDTO(token, createdUser.id(), createdUser.username()));
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la communication avec userService: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<AuthResponseDTO> login(LoginRequestDTO loginRequest) {
+        try {
+            // Rechercher l'utilisateur par nom d'utilisateur
+            ResponseEntity<UserDTO[]> response = restTemplate.getForEntity(
+                    userServiceUrl + "/search?keyword=" + loginRequest.username(),
+                    UserDTO[].class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                return Optional.empty();
+            }
+
+            // Vérifier les identifiants
+            for (UserDTO user : response.getBody()) {
+                if (user.username().equals(loginRequest.username()) &&
+                        passwordEncoder.matches(loginRequest.password(), user.password())) {
+
+                    // Désactiver les anciennes sessions
+                    authRepository.findByUserIdAndActive(user.id(), true)
+                            .ifPresent(auth -> {
+                                auth.setActive(false);
+                                authRepository.save(auth);
+                            });
+
+                    // Générer un nouveau token
+                    String token = jwtService.generateToken(user.id());
+
+                    // Créer une nouvelle session d'authentification
+                    Auth session = Auth.builder()
+                            .userId(user.id())
+                            .token(token)
+                            .active(true)
+                            .expiresAt(System.currentTimeMillis() + 86400000) // 24 heures
+                            .build();
+
+                    authRepository.save(session);
+
+                    return Optional.of(new AuthResponseDTO(token, user.id(), user.username()));
+                }
+            }
+
+            return Optional.empty();
         } catch (Exception e) {
             System.err.println("Erreur lors de la communication avec userService: " + e.getMessage());
             return Optional.empty();
