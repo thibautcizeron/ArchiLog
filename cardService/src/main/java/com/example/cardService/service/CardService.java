@@ -91,4 +91,12 @@ public class CardService {
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         return cardRepository.findAll(sort).stream().map(this::toDTO).collect(Collectors.toList());
     }
+
+    public List<CardDTO> getAvailableCards() {
+    return cardRepository.findAll()
+            .stream()
+            .filter(card -> card.getUserId() == null)
+            .map(this::toDTO)
+            .collect(Collectors.toList());
+    }
 }

@@ -103,11 +103,9 @@
       </div>
     </div>
   </template>
-  
-  // Mise à jour de InventoryView.vue
+
 <script>
-import cardService from '../services/card.service';
-import authStore from '../store/auth.store';
+import axios from 'axios';
 
 export default {
   name: 'InventoryView',
@@ -116,13 +114,37 @@ export default {
       activeTab: 'all',
       searchQuery: '',
       categoryFilter: '',
-      allItems: [],
-      loading: false,
-      error: null
+      allItems: [] // Vide au départ, on la remplit dynamiquement
     }
   },
-  created() {
-    this.fetchUserCards();
+  mounted() {
+    this.fetchCards();
+  },
+  methods: {
+    async fetchCards() {
+      try {
+        const response = await axios.get('/card/api/cards');
+        console.log('Cartes récupérées depuis le backend :', response.data);
+        this.allItems = response.data.map(card => ({
+          name: card.name,
+          category: card.type, // ou card.category selon ta structure
+          price: card.price,
+          status: card.status,
+          color: card.color || '#ccc' // par défaut si pas de couleur
+        }));
+      } catch (error) {
+        console.error('Erreur lors de la récupération des cartes :', error);
+      }
+    },
+    getCategoryName(category) {
+      const categories = {
+        'electronics': 'Électronique',
+        'clothing': 'Vêtements',
+        'home': 'Maison',
+        'sports': 'Sports & Loisirs'
+      };
+      return categories[category] || category;
+    }
   },
   computed: {
     availableItems() {
@@ -133,90 +155,33 @@ export default {
     },
     filteredItems() {
       let items = this.allItems;
-      
-      // Filter by tab
+
       if (this.activeTab === 'available') {
         items = this.availableItems;
       } else if (this.activeTab === 'sold') {
         items = this.soldItems;
       }
-      
-      // Filter by category
+
       if (this.categoryFilter) {
         items = items.filter(item => item.category === this.categoryFilter);
       }
-      
-      // Filter by search query
+
       if (this.searchQuery.trim()) {
         const query = this.searchQuery.toLowerCase();
-        items = items.filter(item => 
-          item.name.toLowerCase().includes(query) || 
-          this.getCategoryName(item.category).toLowerCase().includes(query)
+        items = items.filter(item =>
+            item.name.toLowerCase().includes(query) ||
+            this.getCategoryName(item.category).toLowerCase().includes(query)
         );
       }
-      
+
       return items;
-    }
-  },
-  methods: {
-    async fetchUserCards() {
-      if (!authStore.isAuthenticated()) {
-        this.$router.push('/');
-        return;
-      }
-      
-      this.loading = true;
-      try {
-        const cards = await cardService.getUserCards();
-        // Transform cards to match the expected format
-        this.allItems = cards.map(card => ({
-          id: card.id,
-          name: card.name,
-          category: card.type,
-          price: 100, // Set a default price or get it from somewhere else
-          status: 'available',
-          color: this.getColorByRarity(card.rarity)
-        }));
-      } catch (error) {
-        this.error = 'Failed to fetch cards. Please try again.';
-        console.error('Error fetching cards:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    getColorByRarity(rarity) {
-      const colors = {
-        'Common': '#7966f6',
-        'Uncommon': '#4a90e2',
-        'Rare': '#e74c3c',
-        'Epic': '#2ecc71',
-        'Legendary': '#f39c12'
-      };
-      return colors[rarity] || '#7966f6';
-    },
-    getCategoryName(category) {
-      const categories = {
-        'electronics': 'Électronique',
-        'clothing': 'Vêtements',
-        'home': 'Maison',
-        'sports': 'Sports & Loisirs',
-        'Dragon': 'Dragon',
-        'Spirit': 'Esprit',
-        'Mage': 'Mage',
-        'Golem': 'Golem',
-        'Beast': 'Bête',
-        'Elf': 'Elfe',
-        'Fairy': 'Fée',
-        'Assassin': 'Assassin',
-        'Knight': 'Chevalier'
-      };
-      return categories[category] || category;
     }
   }
 }
 </script>
-  
-  <style scoped>
+
+
+<style scoped>
   .page-container {
     min-height: 100vh;
     background-color: #f9f9f9;

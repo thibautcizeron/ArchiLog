@@ -4,7 +4,7 @@ services:
       context: ./authService
       dockerfile: Dockerfile.dev
     ports:
-      - "8081:8080"
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
@@ -19,7 +19,7 @@ services:
       context: ./cardService
       dockerfile: Dockerfile.dev
     ports:
-      - "8082:8080"
+      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
@@ -33,7 +33,7 @@ services:
       context: ./gameService
       dockerfile: Dockerfile.dev
     ports:
-      - "8083:8080"
+      - "8083:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
@@ -47,7 +47,7 @@ services:
       context: ./userService
       dockerfile: Dockerfile.dev
     ports:
-      - "8084:8080"
+      - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
@@ -61,7 +61,7 @@ services:
       context: ./marketService
       dockerfile: Dockerfile.dev
     ports:
-      - "8085:8080"
+      - "8085:8085"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
@@ -75,7 +75,7 @@ services:
       context: ./roomService
       dockerfile: Dockerfile.dev
     ports:
-      - "8086:8080"
+      - "8086:8086"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:

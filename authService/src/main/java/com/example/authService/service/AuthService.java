@@ -51,6 +51,7 @@ public class AuthService {
                             .token(token)
                             .active(true)
                             .expiresAt(System.currentTimeMillis() + 86400000)
+
                             .build();
 
                     authRepository.save(session);

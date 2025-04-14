@@ -52,4 +52,12 @@ public class UserController {
     public List<UserDTO> searchUsers(@RequestParam String keyword) {
         return userService.searchUsers(keyword);
     }
+
+    @PutMapping("/{id}/role")
+    public ResponseEntity<UserDTO> updateUserRole(@PathVariable UUID id, @RequestParam String role) {
+        return userService.updateUserRole(id, role)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }

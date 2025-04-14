@@ -78,130 +78,56 @@
     </div>
   </template>
   
-  // Mise à jour de PlayView.vue
-<script>
-import gameService from '../services/game.service';
-import authStore from '../store/auth.store';
-
-export default {
-  name: 'PlayView',
-  data() {
-    return {
-      categories: [
-        { 
-          id: 1, 
-          name: 'Arcade', 
-          icon: 'M17 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM9 9h6M9 12h6M9 15h6', 
-          colorClass: 'bg-purple' 
-        },
-        { 
-          id: 2, 
-          name: 'Stratégie', 
-          icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', 
-          colorClass: 'bg-blue' 
-        },
-        { 
-          id: 3, 
-          name: 'Sports', 
-          icon: 'M12 22c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zM15 9l-6 6M9 9l6 6', 
-          colorClass: 'bg-green' 
-        },
-        { 
-          id: 4, 
-          name: 'Quiz', 
-          icon: 'M8.5 14l-5-5L5 7.5 8.5 11 19 0.5l2 1.5-12.5 12zM21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7', 
-          colorClass: 'bg-orange' 
-        }
-      ],
-      featuredGames: [
-        { id: 101, name: 'Space Adventure', players: '1-4 joueurs', rating: 4.8, initials: 'SA', color: '#7966f6' },
-        { id: 102, name: 'Chess Master', players: '2 joueurs', rating: 4.9, initials: 'CM', color: '#4a90e2' },
-        { id: 103, name: 'Quiz Challenge', players: '1-8 joueurs', rating: 4.5, initials: 'QC', color: '#e74c3c' }
-      ],
-      rooms: [],
-      loading: false,
-      error: null
-    }
-  },
-  created() {
-    this.fetchRooms();
-  },
-  methods: {
-    async fetchRooms() {
-      this.loading = true;
-      try {
-        // Assuming the room service will have an endpoint to list rooms
-        const response = await fetch('http://localhost:8086/api/rooms', {
-          headers: this.getAuthHeaders()
-        });
-        if (response.ok) {
-          this.rooms = await response.json();
-        }
-      } catch (error) {
-        console.error('Error fetching rooms:', error);
-      } finally {
-        this.loading = false;
+  <script>
+  export default {
+    name: 'PlayView',
+    data() {
+      return {
+        categories: [
+          { 
+            id: 1, 
+            name: 'Arcade', 
+            icon: 'M17 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM9 9h6M9 12h6M9 15h6', 
+            colorClass: 'bg-purple' 
+          },
+          { 
+            id: 2, 
+            name: 'Stratégie', 
+            icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5', 
+            colorClass: 'bg-blue' 
+          },
+          { 
+            id: 3, 
+            name: 'Sports', 
+            icon: 'M12 22c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zM15 9l-6 6M9 9l6 6', 
+            colorClass: 'bg-green' 
+          },
+          { 
+            id: 4, 
+            name: 'Quiz', 
+            icon: 'M8.5 14l-5-5L5 7.5 8.5 11 19 0.5l2 1.5-12.5 12zM21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7', 
+            colorClass: 'bg-orange' 
+          }
+        ],
+        featuredGames: [
+          { id: 101, name: 'Space Adventure', players: '1-4 joueurs', rating: 4.8, initials: 'SA', color: '#7966f6' },
+          { id: 102, name: 'Chess Master', players: '2 joueurs', rating: 4.9, initials: 'CM', color: '#4a90e2' },
+          { id: 103, name: 'Quiz Challenge', players: '1-8 joueurs', rating: 4.5, initials: 'QC', color: '#e74c3c' }
+        ]
       }
     },
-    getAuthHeaders() {
-      const headers = {
-        'Content-Type': 'application/json'
-      };
-      if (authStore.isAuthenticated()) {
-        headers['Authorization'] = `Bearer ${authStore.state.user.token}`;
-      }
-      return headers;
-    },
-    selectCategory(categoryId) {
-      console.log('Catégorie sélectionnée :', categoryId);
-      // Filter games by category
-    },
-    async startGame(gameId) {
-      if (!authStore.isAuthenticated()) {
-        this.error = 'Please login to play games';
-        return;
-      }
-      
-      this.loading = true;
-      try {
-        // Create a new room for the game
-        const roomData = {
-          gameId: gameId,
-          creatorId: authStore.state.user.userId,
-          maxPlayers: 4,
-          status: 'waiting'
-        };
-        const room = await gameService.createRoom(roomData);
-        // Navigate to the room
-        this.$router.push(`/room/${room.id}`);
-      } catch (error) {
-        this.error = 'Failed to start game. Please try again.';
-        console.error('Error starting game:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    async joinRoom(roomId) {
-      if (!authStore.isAuthenticated()) {
-        this.error = 'Please login to join rooms';
-        return;
-      }
-      
-      this.loading = true;
-      try {
-        await gameService.joinRoom(roomId);
-        // Navigate to the room
-        this.$router.push(`/room/${roomId}`);
-      } catch (error) {
-        this.error = 'Failed to join room. Please try again.';
-        console.error('Error joining room:', error);
-      } finally {
-        this.loading = false;
+    methods: {
+      selectCategory(categoryId) {
+        console.log('Catégorie sélectionnée :', categoryId);
+        // Logique de navigation ou d'affichage des jeux par catégorie
+      },
+      startGame(gameId) {
+        console.log('Lancement du jeu :', gameId);
+        // Logique pour démarrer le jeu sélectionné
       }
     }
   }
-}
-</script>
+  </script>
   
   <style scoped>
   .page-container {

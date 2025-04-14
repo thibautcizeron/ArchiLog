@@ -1,4 +1,4 @@
-// Modification du composant NavBar.vue
+<!-- NavBar.vue -->
 <template>
     <nav class="navbar">
       <div class="container">
@@ -16,22 +16,12 @@
             <span class="icon">▶️</span> 
             <span class="text">Play</span>
           </button>
-          <button v-if="isAuthenticated" class="nav-button" @click="navigate('inventory')">
-            <span class="icon">📦</span> 
-            <span class="text">Inventory</span>
-          </button>
-          <button v-if="isAuthenticated" class="nav-button logout-button" @click="logout">
-            <span class="icon">🚪</span> 
-            <span class="text">Logout</span>
-          </button>
         </div>
       </div>
     </nav>
   </template>
   
   <script>
-  import authStore from '../store/auth.store';
-
   export default {
     name: 'NavBar',
     props: {
@@ -40,30 +30,86 @@
         default: 'Mon Site Web'
       }
     },
-    data() {
-      return {
-        isAuthenticated: false
-      }
-    },
-    created() {
-      this.isAuthenticated = authStore.isAuthenticated();
-      // Listen for authentication changes
-      this.$root.$on('auth-changed', this.checkAuth);
-    },
     methods: {
       navigate(route) {
         // Cette méthode peut être utilisée pour la navigation
-        this.$router.push(`/${route}`);
-      },
-      logout() {
-        authStore.logout();
-        this.isAuthenticated = false;
-        this.$root.$emit('auth-changed');
-        this.$router.push('/');
-      },
-      checkAuth() {
-        this.isAuthenticated = authStore.isAuthenticated();
+        // Si vous utilisez Vue Router:
+        // this.$router.push(`/${route}`);
+        console.log(`Navigation vers ${route}`);
       }
     }
   }
   </script>
+  
+  <style scoped>
+  .navbar {
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .navbar-title {
+    color: #7966f6;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .navbar-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  
+  .nav-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 2rem;
+    border: 2px solid #333;
+    border-radius: 50px;
+    background-color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+  }
+  
+  .nav-button:hover {
+    background-color: #f5f5ff;
+    border-color: #7966f6;
+  }
+  
+  .nav-button .icon {
+    font-size: 1.2rem;
+    color: #7966f6;
+  }
+  
+  .nav-button .text {
+    color: #333;
+  }
+  
+  /* Responsive design */
+  @media (min-width: 768px) {
+    .container {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    
+    .navbar-title {
+      margin-bottom: 0;
+    }
+  }
+  </style>

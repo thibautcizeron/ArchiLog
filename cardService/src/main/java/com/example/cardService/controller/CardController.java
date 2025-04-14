@@ -20,6 +20,11 @@ public class CardController {
         return cardService.getAllCards();
     }
 
+    @GetMapping("/available")
+    public List<CardDTO> getAvailableCards() {
+        return cardService.getAvailableCards();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CardDTO> getCardById(@PathVariable UUID id) {
         return cardService.getCardById(id)

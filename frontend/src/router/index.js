@@ -1,6 +1,7 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import TermsView from '../assets/TermsView.vue'
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
     path: '/inventory',
     name: 'inventory',
     component: () => import(/* webpackChunkName: "inventory" */ '../views/InventoryView.vue')
+  },
+  {
+    path: '/terms',
+    name: 'Terms',
+    component: TermsView
   }
 ]
 

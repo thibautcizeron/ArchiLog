@@ -18,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     private UserDTO mapToDTO(User user) {
-        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword());
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getRole());
     }
 
     private User mapToEntity(UserDTO dto) {
@@ -27,6 +27,7 @@ public class UserService {
                 .username(dto.username())
                 .email(dto.email())
                 .password(dto.password())
+                .role(dto.role() != null ? dto.role() : "USER")
                 .build();
     }
 
@@ -68,5 +69,12 @@ public class UserService {
         return userRepository.searchByUsernameOrEmail(keyword).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<UserDTO> updateUserRole(UUID id, String role) {
+        return userRepository.findById(id).map(user -> {
+            user.setRole(role);
+            return mapToDTO(userRepository.save(user));
+        });
     }
 }

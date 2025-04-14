@@ -1,4 +1,4 @@
-<!-- src/App.vue (version corrigée) -->
+<!-- src/App.vue -->
 <template>
   <div id="app">
     <header class="app-header">
@@ -88,7 +88,7 @@
             </div>
             <div class="form-group">
               <input type="checkbox" id="terms" v-model="acceptTerms">
-              <label for="terms" class="inline-label">J'accepte les <a href="#">conditions d'utilisation</a></label>
+              <label for="terms" class="inline-label">J'accepte les <router-link to="/terms">conditions d'utilisation</router-link></label>
             </div>
             <div class="form-actions">
               <button class="auth-submit" @click="signup" :disabled="!canSignup">S'inscrire</button>
@@ -182,9 +182,6 @@ export default {
 }
 </script>
 
-<style>
-/* Gardez votre style CSS existant ici */
-</style>
 <style>
 * {
   margin: 0;
