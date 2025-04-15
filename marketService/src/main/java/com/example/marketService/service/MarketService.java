@@ -77,34 +77,82 @@ public class MarketService {
         if (listingOpt.isEmpty()) return false;
 
         Market listing = listingOpt.get();
-
+        
         try {
-            // Étape 1 : Récupérer la carte existante
+            // First check buyer's balance
+            ResponseEntity<Map> userResponse = restTemplate.getForEntity(
+                    "http://nginx/user/api/users/" + buyerId, 
+                    Map.class);
+            
+            if (!userResponse.getStatusCode().is2xxSuccessful() || userResponse.getBody() == null) {
+                return false;
+            }
+            
+            Map<String, Object> userData = userResponse.getBody();
+            int currentBalance = (int) userData.get("solde");
+            
+            if (currentBalance < listing.getPrice()) {
+                return false; // Not enough funds
+            }
+            
+            // Update user balance
+            userData.put("solde", currentBalance - listing.getPrice());
+            
+            HttpEntity<Map<String, Object>> userUpdateRequest = new HttpEntity<>(userData);
+            ResponseEntity<Void> userUpdateResponse = restTemplate.exchange(
+                    "http://nginx/user/api/users/" + buyerId,
+                    HttpMethod.PUT,
+                    userUpdateRequest,
+                    Void.class
+            );
+            
+            if (!userUpdateResponse.getStatusCode().is2xxSuccessful()) return false;
+            
+            // Update card ownership
             ResponseEntity<Map> getResponse = restTemplate.getForEntity(
-                    cardServiceUrl + "/" + listing.getCardId(), Map.class);
-
+                    "http://nginx/card/api/cards/" + listing.getCardId(), 
+                    Map.class);
+            
             if (!getResponse.getStatusCode().is2xxSuccessful() || getResponse.getBody() == null) {
                 return false;
             }
-
+            
             Map<String, Object> cardData = getResponse.getBody();
-            cardData.put("userId", buyerId); // Mettre à jour le propriétaire de la carte
-
-            // Étape 2 : Envoyer la mise à jour avec tous les champs
+            cardData.put("userId", buyerId); // Update card ownership
+            
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(cardData);
             ResponseEntity<Void> updateResponse = restTemplate.exchange(
-                    cardServiceUrl + "/" + listing.getCardId(),
+                    "http://nginx/card/api/cards/" + listing.getCardId(),
                     HttpMethod.PUT,
                     request,
                     Void.class
             );
-
+            
             if (!updateResponse.getStatusCode().is2xxSuccessful()) return false;
+            
+            // Update seller's balance
+            ResponseEntity<Map> sellerResponse = restTemplate.getForEntity(
+                    "http://nginx/user/api/users/" + listing.getSellerId(), 
+                    Map.class);
+                    
+            if (sellerResponse.getStatusCode().is2xxSuccessful() && sellerResponse.getBody() != null) {
+                Map<String, Object> sellerData = sellerResponse.getBody();
+                int sellerBalance = (int) sellerData.get("solde");
+                sellerData.put("solde", sellerBalance + listing.getPrice());
+                
+                HttpEntity<Map<String, Object>> sellerUpdateRequest = new HttpEntity<>(sellerData);
+                restTemplate.exchange(
+                        "http://nginx/user/api/users/" + listing.getSellerId(),
+                        HttpMethod.PUT,
+                        sellerUpdateRequest,
+                        Void.class
+                );
+            }
 
-            // Étape 3 : Supprimer l'annonce du marché
+            // Remove the market listing
             marketRepo.delete(listing);
-
-            // Étape 4 : Enregistrer la transaction
+            
+            // Record the transaction
             transactionRepo.save(Transaction.builder()
                     .cardId(cardId)
                     .buyerId(buyerId)
@@ -112,10 +160,10 @@ public class MarketService {
                     .price(listing.getPrice())
                     .timestamp(LocalDateTime.now())
                     .build());
-
+                    
             return true;
         } catch (Exception e) {
-            System.err.println("Erreur lors de la communication avec cardService: " + e.getMessage());
+            System.err.println("Error processing purchase: " + e.getMessage());
             return false;
         }
     }

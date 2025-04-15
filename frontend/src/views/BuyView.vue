@@ -167,6 +167,56 @@ export default {
         this.loading = false;
       }
     },
+    async buyCard(card) {
+      if (!card.id) {
+        console.error('Invalid card data', card);
+        return;
+      }
+      
+      // Check if user is logged in
+      if (!AuthStore.state.isLoggedIn) {
+        AuthStore.showNotification('Vous devez être connecté pour acheter cette carte', 'error');
+        return;
+      }
+      
+      try {
+        const userId = AuthStore.state.userId;
+        
+        // Fetch the current balance
+        const balanceResponse = await UserService.getCurrentUser(userId);
+        const currentBalance = balanceResponse.data?.solde || 0;
+        
+        // Check if user has enough balance
+        if (currentBalance < card.price) {
+          AuthStore.showNotification(`Solde insuffisant (${currentBalance}€) pour acheter cette carte (${card.price}€)`, 'error');
+          return;
+        }
+        
+        const response = await fetch('/market/api/market/buy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cardId: card.id,
+            userId: userId
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          AuthStore.showNotification(`Carte "${card.name}" achetée avec succès!`, 'success');
+          // Refresh the cards list
+          this.loadAvailableCards();
+        } else {
+          AuthStore.showNotification(data.message || 'Impossible d\'acheter cette carte', 'error');
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'achat:', error);
+        AuthStore.showNotification('Une erreur est survenue lors de l\'achat', 'error');
+      }
+    },
     
     resetFilters() {
       this.filters = {
