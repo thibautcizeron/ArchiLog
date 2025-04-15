@@ -2,7 +2,7 @@
 <template>
   <div class="home-container">
     <div class="hero-section">
-      <h1 class="title">Bienvenue sur notre plateforme</h1>
+      <h1 class="title">Play with Riboudou</h1>
       <p class="subtitle">Achetez, vendez et découvrez de nouvelles expériences</p>
       
       <div class="play-button-container">
@@ -56,6 +56,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'HomeView',
   methods: {
@@ -66,133 +67,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.home-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: calc(100vh - 60px);
-  padding: 3rem 2rem;
-  background-color: #f9f9f9;
-}
-
-.hero-section {
-  max-width: 1200px;
-  width: 100%;
-  text-align: center;
-}
-
-.title {
-  color: #7966f6;
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 1.2rem;
-  margin-bottom: 3rem;
-}
-
-.play-button-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 4rem;
-}
-
-.play-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  background-color: #7966f6;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 1.2rem 3rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(121, 102, 246, 0.4);
-}
-
-.play-button:hover {
-  background-color: #6452d9;
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(121, 102, 246, 0.5);
-}
-
-.button-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.features-section {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.feature {
-  flex: 1;
-  min-width: 250px;
-  max-width: 350px;
-  background-color: white;
-  border-radius: 10px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-.feature-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  background-color: #f5f5ff;
-  border-radius: 50%;
-  margin-bottom: 1.5rem;
-}
-
-.feature h3 {
-  color: #333;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-}
-
-.feature p {
-  color: #666;
-  line-height: 1.5;
-}
-
-@media (max-width: 768px) {
-  .title {
-    font-size: 2rem;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-  }
-  
-  .play-button {
-    padding: 1rem 2.5rem;
-    font-size: 1.2rem;
-  }
-  
-  .features-section {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .feature {
-    width: 100%;
-    max-width: 100%;
-  }
-}
-</style>
+<style src="../assets/styles/HomeView.css" scoped></style>

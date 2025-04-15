@@ -1,0 +1,141 @@
+.page-container {
+    min-height: 100vh;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    background-color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #7966f6;
+    font-weight: bold;
+}
+
+.navbar h2 {
+    margin-left: 2rem;
+    color: #333;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.filters-section {
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.cards-section {
+    flex: 3;
+    min-width: 300px;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+input, select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+input[type="range"] {
+    margin-bottom: 0.5rem;
+}
+
+.action-button {
+    background-color: #7966f6;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.action-button:hover {
+    background-color: #6452d9;
+}
+
+.reset-button {
+    background-color: #e74c3c;
+}
+
+.reset-button:hover {
+    background-color: #c0392b;
+}
+
+.loading-indicator, .error-message, .no-cards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    color: #666;
+}
+
+.error-message {
+    color: #e74c3c;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+
+    .filters-section {
+        max-width: 100%;
+    }
+}

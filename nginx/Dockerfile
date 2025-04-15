@@ -5,6 +5,7 @@
 # COPY /frontend ./
 # CMD ["npm", "run", "dev", "--", "--host"]
 
+
 FROM node:20 AS build
 WORKDIR /app
 COPY frontend/package*.json ./

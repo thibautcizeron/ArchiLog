@@ -1,38 +1,40 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import TermsView from '../assets/TermsView.vue'
+import AuthStore from '../store/AuthStore'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('../views/HomeView.vue')
   },
   {
     path: '/buy',
     name: 'buy',
-    component: () => import(/* webpackChunkName: "buy" */ '../views/BuyView.vue')
+    component: () => import('../views/BuyView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/sell',
     name: 'sell',
-    component: () => import(/* webpackChunkName: "sell" */ '../views/SellView.vue')
+    component: () => import('../views/SellView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/play',
     name: 'play',
-    component: () => import(/* webpackChunkName: "play" */ '../views/PlayView.vue')
+    component: () => import('../views/PlayView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/inventory',
     name: 'inventory',
-    component: () => import(/* webpackChunkName: "inventory" */ '../views/InventoryView.vue')
+    component: () => import('../views/InventoryView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/terms',
-    name: 'Terms',
-    component: TermsView
+    name: 'terms',
+    component: () => import('../views/TermsView.vue')
   }
 ]
 
@@ -40,5 +42,20 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const isAuthenticated = await AuthStore.checkAuthStatus();
+    if (!isAuthenticated) {
+      AuthStore.showNotification('Veuillez vous connecter', 'error');
+      next({ name: 'home' });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
 
 export default router

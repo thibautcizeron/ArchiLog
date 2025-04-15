@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "4dc3c216-fb18-4da3-9c8c-3e46203fb2af",
+		"_postman_id": "58684f1a-eb65-4691-9608-f4ee098b7ca2",
 		"name": "collection_postman_micro_service",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33552647"
+		"_exporter_id": "33709751"
 	},
 	"item": [
 		{
@@ -1424,7 +1424,158 @@
 		},
 		{
 			"name": "room-service",
-			"item": []
+			"item": [
+				{
+					"name": "User crée une room",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:80/room/api/rooms/create?playerId=0844c66d-37f1-49a2-aef7-5c45b7fcd5b7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"room",
+								"api",
+								"rooms",
+								"create"
+							],
+							"query": [
+								{
+									"key": "playerId",
+									"value": "0844c66d-37f1-49a2-aef7-5c45b7fcd5b7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User crée join room",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/room/api/rooms/join?playerId=320b5d15-13b3-4f3f-b125-ae31e7f93962",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"room",
+								"api",
+								"rooms",
+								"join"
+							],
+							"query": [
+								{
+									"key": "playerId",
+									"value": "320b5d15-13b3-4f3f-b125-ae31e7f93962"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "affiche liste des rooms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/room/api/rooms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"room",
+								"api",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lister les rooms en attente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/room/api/rooms/waiting",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"room",
+								"api",
+								"rooms",
+								"waiting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lister par statut",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/room/api/rooms/status?value=FULL",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"room",
+								"api",
+								"rooms",
+								"status"
+							],
+							"query": [
+								{
+									"key": "value",
+									"value": "FULL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer une room {id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost/room/api/rooms/0a57ac46-7200-4a96-99da-6b6bbcb4bb45",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"room",
+								"api",
+								"rooms",
+								"0a57ac46-7200-4a96-99da-6b6bbcb4bb45"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "front",

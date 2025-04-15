@@ -22,4 +22,5 @@ public class User {
 
     @Builder.Default
     private String role = "USER";
+    private int solde = 300;
 }

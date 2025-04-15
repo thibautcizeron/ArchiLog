@@ -24,7 +24,8 @@ public class CardService {
                 card.getRarity(),
                 card.getType(),
                 card.getImageUrl(),
-                card.getUserId()
+                card.getUserId(),
+                card.getPrice()
         );
     }
 
@@ -36,6 +37,7 @@ public class CardService {
                 .type(dto.type())
                 .imageUrl(dto.imageUrl())
                 .userId(dto.userId())
+                .price(dto.price())
                 .build();
     }
 
@@ -63,6 +65,7 @@ public class CardService {
             card.setType(dto.type());
             card.setImageUrl(dto.imageUrl());
             card.setUserId(dto.userId());
+            card.setPrice(dto.price());
             return toDTO(cardRepository.save(card));
         });
     }
@@ -93,10 +96,10 @@ public class CardService {
     }
 
     public List<CardDTO> getAvailableCards() {
-    return cardRepository.findAll()
-            .stream()
-            .filter(card -> card.getUserId() == null)
-            .map(this::toDTO)
-            .collect(Collectors.toList());
+        return cardRepository.findAll()
+                .stream()
+                .filter(card -> card.getUserId() == null)
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -1,115 +1,122 @@
-<!-- NavBar.vue -->
 <template>
-    <nav class="navbar">
-      <div class="container">
-        <h1 class="navbar-title">{{ title }}</h1>
-        <div class="navbar-buttons">
-          <button class="nav-button" @click="navigate('buy')">
-            <span class="icon">🛒</span> 
-            <span class="text">Buy</span>
-          </button>
-          <button class="nav-button" @click="navigate('sell')">
-            <span class="icon">💰</span> 
-            <span class="text">Sell</span>
-          </button>
-          <button class="nav-button" @click="navigate('play')">
-            <span class="icon">▶️</span> 
-            <span class="text">Play</span>
-          </button>
+  <header class="app-header">
+    <div class="header-left">
+      <a href="/" class="logo">Riboudou Cards Games</a>
+      <nav class="main-nav">
+        <router-link to="/buy" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          Acheter
+        </router-link>
+        <router-link to="/sell" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
+            <path d="M12 6v2m0 8v2"></path>
+          </svg>
+          Vendre
+        </router-link>
+        <router-link to="/inventory" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="18" rx="2"></rect>
+            <line x1="2" y1="9" x2="22" y2="9"></line>
+            <line x1="9" y1="21" x2="9" y2="9"></line>
+          </svg>
+          Inventaire
+        </router-link>
+      </nav>
+    </div>
+    <div class="header-right">
+      <button v-if="!isLoggedIn" class="login-button" @click="showAuthForm = true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Connexion</span>
+      </button>
+
+      <div v-else class="user-avatar-container">
+        <div class="user-avatar" @click="showUserMenu = !showUserMenu">
+          {{ getUserInitial }}
+        </div>
+        
+        <div v-if="showUserMenu" class="user-menu">
+          <div class="user-menu-header">
+            <span class="username">{{ username }}</span>
+          </div>
+          <div class="user-menu-items">
+            <button class="menu-item" @click="logout">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Déconnexion
+            </button>
+          </div>
         </div>
       </div>
-    </nav>
-  </template>
+      
+      <AuthForm
+        v-if="showAuthForm" 
+        :show="showAuthForm" 
+        @close="showAuthForm = false"
+      />
+    </div>
+  </header>
+</template>
+
+<script>
+import AuthForm from './AuthForm.vue';
+import AuthStore from '../store/AuthStore';
+
+export default {
+  components: {
+    AuthForm
+  },
   
-  <script>
-  export default {
-    name: 'NavBar',
-    props: {
-      title: {
-        type: String,
-        default: 'Mon Site Web'
+  data() {
+    return {
+      showAuthForm: false,
+      showUserMenu: false
+    }
+  },
+  
+  computed: {
+    isLoggedIn() {
+      return AuthStore.state.isLoggedIn;
+    },
+    username() {
+      return AuthStore.state.username;
+    },
+    getUserInitial() {
+      return AuthStore.getUserInitial();
+    }
+  },
+  
+  mounted() {
+    document.addEventListener('click', this.handleOutsideClick);
+  },
+  
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleOutsideClick);
+  },
+  
+  methods: {
+    handleOutsideClick(event) {
+      const avatarContainer = this.$el.querySelector('.user-avatar-container');
+      if (this.showUserMenu && avatarContainer && !avatarContainer.contains(event.target)) {
+        this.showUserMenu = false;
       }
     },
-    methods: {
-      navigate(route) {
-        // Cette méthode peut être utilisée pour la navigation
-        // Si vous utilisez Vue Router:
-        // this.$router.push(`/${route}`);
-        console.log(`Navigation vers ${route}`);
+    
+    async logout() {
+      const success = await AuthStore.logout();
+      if (success) {
+        this.showUserMenu = false;
       }
     }
   }
-  </script>
-  
-  <style scoped>
-  .navbar {
-    width: 100%;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1rem 0;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .navbar-title {
-    color: #7966f6;
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .navbar-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
-  }
-  
-  .nav-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.8rem 2rem;
-    border: 2px solid #333;
-    border-radius: 50px;
-    background-color: white;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 150px;
-  }
-  
-  .nav-button:hover {
-    background-color: #f5f5ff;
-    border-color: #7966f6;
-  }
-  
-  .nav-button .icon {
-    font-size: 1.2rem;
-    color: #7966f6;
-  }
-  
-  .nav-button .text {
-    color: #333;
-  }
-  
-  /* Responsive design */
-  @media (min-width: 768px) {
-    .container {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    
-    .navbar-title {
-      margin-bottom: 0;
-    }
-  }
-  </style>
+}
+</script>

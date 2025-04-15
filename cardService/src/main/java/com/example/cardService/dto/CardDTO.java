@@ -9,5 +9,6 @@ public record CardDTO(
         String rarity,
         String type,
         String imageUrl,
-        UUID userId
+        UUID userId,
+        int price
 ) {}

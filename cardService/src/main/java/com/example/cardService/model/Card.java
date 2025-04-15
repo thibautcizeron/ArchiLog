@@ -21,4 +21,5 @@ public class Card {
     private String type;
     private String imageUrl;
     private UUID userId;
+    private int price;
 }

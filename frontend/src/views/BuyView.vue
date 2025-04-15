@@ -55,7 +55,7 @@
           <span>{{ filters.maxPrice }}€</span>
         </div>
         
-        <button class="action-button" @click="applyFilters">Appliquer les filtres</button>
+        <button class="action-button reset-button" @click="resetFilters">Réinitialiser les filtres</button>
       </div>
 
       <div class="cards-section">
@@ -112,17 +112,14 @@ export default {
       if (!this.cards.length) return [];
       
       return this.cards.filter(card => {
-        // Filtre par rareté
         if (this.filters.rarity && card.rarity !== this.filters.rarity) {
           return false;
         }
         
-        // Filtre par type
         if (this.filters.type && card.type !== this.filters.type) {
           return false;
         }
         
-        // Filtre par recherche (nom ou description)
         if (this.filters.search) {
           const searchTerm = this.filters.search.toLowerCase();
           const nameMatch = card.name && card.name.toLowerCase().includes(searchTerm);
@@ -132,7 +129,6 @@ export default {
           }
         }
         
-        // Filtre par prix (si disponible dans l'API)
         if (this.filters.maxPrice && card.price && card.price > this.filters.maxPrice) {
           return false;
         }
@@ -150,7 +146,6 @@ export default {
       this.error = null;
       
       try {
-        // Utilisation du chemin corrigé pour le reverse proxy
         const response = await fetch('/card/api/cards/available');
         
         if (!response.ok) {
@@ -159,7 +154,6 @@ export default {
         
         this.cards = await response.json();
         
-        // Ajouter des URL d'images par défaut si elles n'existent pas
         this.cards = this.cards.map(card => ({
           ...card,
           imageUrl: card.imageUrl || this.getDefaultCardImage(card.rarity)
@@ -174,10 +168,14 @@ export default {
       }
     },
     
-    applyFilters() {
-      console.log('Filtres appliqués:', this.filters);
-      // Vous pourriez vouloir recharger les cartes depuis l'API avec les filtres
-      // si le filtrage se fait côté serveur
+    resetFilters() {
+      this.filters = {
+        rarity: '',
+        type: '',
+        search: '',
+        maxPrice: 500
+      };
+      console.log('Filtres réinitialisés');
     },
     
     getCardColor(rarity) {
@@ -208,7 +206,6 @@ export default {
       console.log('Tentative d\'achat de la carte:', card);
       
       try {
-        // Utilisation du chemin correct pour le service de transaction avec le reverse proxy
         const response = await fetch('/transaction/api/purchase', {
           method: 'POST',
           headers: {
@@ -223,7 +220,6 @@ export default {
         if (response.ok) {
           const result = await response.json();
           alert(`Achat de "${card.name}" réussi !`);
-          // Actualiser les cartes disponibles
           this.loadAvailableCards();
         } else {
           const errorData = await response.json().catch(() => ({}));
@@ -235,7 +231,6 @@ export default {
       }
     },
     
-    // Méthode pour gérer des erreurs de validation côté client
     validateCard(card) {
       if (!card.id) {
         console.warn('Carte sans ID détectée:', card);
@@ -247,138 +242,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.page-container {
-  min-height: 100vh;
-  background-color: #f9f9f9;
-  display: flex;
-  flex-direction: column;
-}
-
-.navbar {
-  background-color: white;
-  padding: 1rem 2rem;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #7966f6;
-  font-weight: bold;
-}
-
-.navbar h2 {
-  margin-left: 2rem;
-  color: #333;
-}
-
-.content {
-  flex: 1;
-  padding: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
-
-.filters-section {
-  flex: 1;
-  min-width: 250px;
-  max-width: 300px;
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: fit-content;
-}
-
-.cards-section {
-  flex: 3;
-  min-width: 300px;
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-h3 {
-  margin-bottom: 1.5rem;
-  color: #333;
-  font-size: 1.2rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  color: #555;
-  font-size: 0.9rem;
-}
-
-input, select {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 0.9rem;
-}
-
-input[type="range"] {
-  margin-bottom: 0.5rem;
-}
-
-.action-button {
-  background-color: #7966f6;
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  font-size: 0.9rem;
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s ease;
-}
-
-.action-button:hover {
-  background-color: #6452d9;
-}
-
-.loading-indicator, .error-message, .no-cards {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-  color: #666;
-}
-
-.error-message {
-  color: #e74c3c;
-}
-
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .content {
-    flex-direction: column;
-  }
-  
-  .filters-section {
-    max-width: 100%;
-  }
-}
-</style>
+<style src="../assets/styles/BuyView.css" scoped></style>

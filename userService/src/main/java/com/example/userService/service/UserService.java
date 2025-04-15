@@ -18,7 +18,14 @@ public class UserService {
     private final UserRepository userRepository;
 
     private UserDTO mapToDTO(User user) {
-        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getRole());
+        return new UserDTO(
+            user.getId(), 
+            user.getUsername(), 
+            user.getEmail(), 
+            user.getPassword(), 
+            user.getRole(),
+            user.getSolde()
+        );
     }
 
     private User mapToEntity(UserDTO dto) {
@@ -28,6 +35,7 @@ public class UserService {
                 .email(dto.email())
                 .password(dto.password())
                 .role(dto.role() != null ? dto.role() : "USER")
+                .solde(dto.solde() > 0 ? dto.solde() : 300)
                 .build();
     }
 
@@ -53,6 +61,8 @@ public class UserService {
                     existing.setUsername(userDTO.username());
                     existing.setEmail(userDTO.email());
                     existing.setPassword(userDTO.password());
+                    existing.setRole(userDTO.role());
+                    existing.setSolde(userDTO.solde());
                     return mapToDTO(userRepository.save(existing));
                 });
     }
@@ -74,6 +84,13 @@ public class UserService {
     public Optional<UserDTO> updateUserRole(UUID id, String role) {
         return userRepository.findById(id).map(user -> {
             user.setRole(role);
+            return mapToDTO(userRepository.save(user));
+        });
+    }
+    
+    public Optional<UserDTO> updateUserSolde(UUID id, int solde) {
+        return userRepository.findById(id).map(user -> {
+            user.setSolde(solde);
             return mapToDTO(userRepository.save(user));
         });
     }

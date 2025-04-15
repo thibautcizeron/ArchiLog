@@ -22,7 +22,7 @@ public class MarketService {
     private final TransactionRepository transactionRepo;
     private final RestTemplate restTemplate;
 
-    private final String cardServiceUrl = "http://card-service:8080/api/cards";
+    private final String cardServiceUrl = "http://localhost:80/card/api/cards";
 
     public List<MarketDTO> getAllListings() {
         return marketRepo.findAll().stream()
