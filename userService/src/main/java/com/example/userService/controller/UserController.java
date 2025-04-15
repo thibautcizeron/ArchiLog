@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -62,9 +63,10 @@ public class UserController {
 
     @GetMapping("/{id}/solde")
     public ResponseEntity<Map<String, Integer>> getUserSolde(@PathVariable UUID id) {
-        return userService.getUserById(id)
-                .map(user -> ResponseEntity.ok(Map.of("solde", user.solde())))
+        return userService.getUserSolde(id)
+                .map(solde -> ResponseEntity.ok(Map.of("solde", solde)))
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
 }

@@ -94,4 +94,8 @@ public class UserService {
             return mapToDTO(userRepository.save(user));
         });
     }
+    public Optional<Integer> getUserSolde(UUID id) {
+        return userRepository.findById(id).map(User::getSolde);
+    }
+
 }
