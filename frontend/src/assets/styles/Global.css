@@ -552,3 +552,30 @@
     margin: 0;
     padding: 0;
   }
+  .user-solde {
+    background-color: #f0f8ff;
+    border: 1px solid #7966f6;
+    color: #7966f6;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 0.85rem;
+  }
+  
+  .user-solde-menu {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #555;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-avatar-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }

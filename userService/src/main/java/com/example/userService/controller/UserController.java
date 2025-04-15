@@ -60,4 +60,11 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/solde")
+    public ResponseEntity<Map<String, Integer>> getUserSolde(@PathVariable UUID id) {
+        return userService.getUserById(id)
+                .map(user -> ResponseEntity.ok(Map.of("solde", user.solde())))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }

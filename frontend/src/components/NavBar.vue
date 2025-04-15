@@ -37,6 +37,11 @@
       </button>
 
       <div v-else class="user-avatar-container">
+        <!-- Affichage du solde -->
+        <div class="user-solde" v-if="userSolde !== null">
+          <span>{{ userSolde }} €</span>
+        </div>
+        
         <div class="user-avatar" @click="showUserMenu = !showUserMenu">
           {{ getUserInitial }}
         </div>
@@ -44,6 +49,10 @@
         <div v-if="showUserMenu" class="user-menu">
           <div class="user-menu-header">
             <span class="username">{{ username }}</span>
+            <!-- Affichage du solde dans le menu -->
+            <div class="user-solde-menu" v-if="userSolde !== null">
+              Solde: {{ userSolde }} €
+            </div>
           </div>
           <div class="user-menu-items">
             <button class="menu-item" @click="logout">
@@ -70,6 +79,7 @@
 <script>
 import AuthForm from './AuthForm.vue';
 import AuthStore from '../store/AuthStore';
+import axios from 'axios';
 
 export default {
   components: {
@@ -79,7 +89,8 @@ export default {
   data() {
     return {
       showAuthForm: false,
-      showUserMenu: false
+      showUserMenu: false,
+      userSolde: null
     }
   },
   
@@ -95,8 +106,23 @@ export default {
     }
   },
   
+  watch: {
+    // Surveille l'état de connexion pour charger le solde
+    'isLoggedIn': function(newVal) {
+      if (newVal) {
+        this.fetchUserSolde();
+      } else {
+        this.userSolde = null;
+      }
+    }
+  },
+  
   mounted() {
     document.addEventListener('click', this.handleOutsideClick);
+    // Charger le solde à l'initialisation si connecté
+    if (this.isLoggedIn) {
+      this.fetchUserSolde();
+    }
   },
   
   beforeUnmount() {
@@ -115,8 +141,24 @@ export default {
       const success = await AuthStore.logout();
       if (success) {
         this.showUserMenu = false;
+        this.userSolde = null;
+      }
+    },
+    
+    async fetchUserSolde() {
+      try {
+        if (AuthStore.state.userId) {
+          // Utilise un endpoint spécifique qui renvoie uniquement le solde
+          const response = await axios.get(`/user/api/users/${AuthStore.state.userId}/solde`);
+          if (response.data && typeof response.data.solde !== 'undefined') {
+            this.userSolde = response.data.solde;
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du solde:', error);
       }
     }
   }
 }
 </script>
+
