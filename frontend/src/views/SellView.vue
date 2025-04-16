@@ -1,84 +1,213 @@
 <!-- src/views/SellView.vue -->
 <template>
-    <div class="page-container">
-      <div class="navbar">
-        <button class="back-button" @click="$router.push('/')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          Retour
-        </button>
-        <h2>Page de vente</h2>
-      </div>
-  
-      <div class="content">
-        <div class="form-container">
-          <h3>Que souhaitez-vous vendre ?</h3>
-          
-          <div class="form-group">
-            <label for="productName">Nom du produit</label>
-            <input type="text" id="productName" v-model="productName" placeholder="Entrez le nom de votre produit">
-          </div>
-          
-          <div class="form-group">
-            <label for="category">Catégorie</label>
-            <select id="category" v-model="category">
-              <option value="">Sélectionnez une catégorie</option>
-              <option value="electronics">Électronique</option>
-              <option value="clothing">Vêtements</option>
-              <option value="home">Maison</option>
-              <option value="sports">Sports & Loisirs</option>
-              <option value="other">Autre</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" v-model="description" rows="4" placeholder="Décrivez votre produit (état, caractéristiques, etc.)"></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label for="price">Prix (€)</label>
-            <input type="number" id="price" v-model="price" min="0" step="0.01">
-          </div>
-          
-          <div class="form-group">
-            <label for="photos">Photos</label>
-            <div class="photo-upload">
-              <button class="upload-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
-                  <path d="M16 5h6v6"></path>
-                  <path d="M8 12l3 3 9-9"></path>
-                </svg>
-                Ajouter des photos
-              </button>
-              <span class="upload-help">Jusqu'à 5 photos (JPEG ou PNG)</span>
+  <div class="page-container">
+    <div class="navbar">
+      <button class="back-button" @click="$router.push('/')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Retour
+      </button>
+      <h2>Vendre une carte</h2>
+    </div>
+
+    <div class="content">
+      <div class="form-container">
+        <h3>Sélectionnez une carte à vendre</h3>
+        
+        <!-- Liste des cartes de l'utilisateur -->
+        <div v-if="loading" class="loading-indicator">
+          <p>Chargement de vos cartes...</p>
+        </div>
+        
+        <div v-else-if="error" class="error-message">
+          <p>{{ error }}</p>
+        </div>
+        
+        <div v-else-if="userCards.length === 0" class="no-cards">
+          <p>Vous n'avez aucune carte à vendre.</p>
+          <router-link to="/buy" class="action-button">Acheter des cartes</router-link>
+        </div>
+        
+        <div v-else>
+          <div class="cards-selection">
+            <div 
+              v-for="card in userCards" 
+              :key="card.id"
+              :class="['card-option', { 'selected': selectedCard && selectedCard.id === card.id }]"
+              @click="selectCard(card)"
+            >
+              <div class="card-preview" :class="getCardRarityClass(card.rarity)">
+                <div class="card-name">{{ card.name }}</div>
+                <div class="card-type">{{ card.type }}</div>
+                <div class="card-rarity">{{ card.rarity }}</div>
+              </div>
             </div>
           </div>
           
-          <div class="button-group">
-            <button class="action-button draft-button">Enregistrer comme brouillon</button>
-            <button class="action-button">Publier l'annonce</button>
+          <div v-if="selectedCard" class="sell-form">
+            <h4>Détails de la vente</h4>
+            
+            <div class="selected-card-details">
+              <p><strong>Carte sélectionnée:</strong> {{ selectedCard.name }}</p>
+              <p><strong>Rareté:</strong> {{ selectedCard.rarity }}</p>
+              <p><strong>Type:</strong> {{ selectedCard.type }}</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="price">Prix de vente (€)</label>
+              <input 
+                type="number" 
+                id="price" 
+                v-model="price" 
+                min="1" 
+                step="1"
+                placeholder="Entrez le prix de vente"
+              >
+              <div v-if="priceError" class="form-error">{{ priceError }}</div>
+            </div>
+            
+            <div class="form-group">
+              <label for="description">Description complémentaire (optionnel)</label>
+              <textarea 
+                id="description" 
+                v-model="description" 
+                rows="3" 
+                placeholder="Ajoutez des informations supplémentaires pour les acheteurs"
+              ></textarea>
+            </div>
+            
+            <div class="button-group">
+              <button class="action-button" @click="sellCard" :disabled="isSubmitting">
+                {{ isSubmitting ? 'Publication en cours...' : 'Mettre en vente' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'SellView',
-    data() {
-      return {
-        productName: '',
-        category: '',
-        description: '',
-        price: null,
-        photos: []
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+import AuthStore from '../store/AuthStore';
+
+export default {
+  name: 'SellView',
+  data() {
+    return {
+      userCards: [],
+      loading: true,
+      error: null,
+      selectedCard: null,
+      price: null,
+      description: '',
+      priceError: '',
+      isSubmitting: false
+    }
+  },
+  mounted() {
+    this.fetchUserCards();
+  },
+  methods: {
+    async fetchUserCards() {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        const userId = AuthStore.state.userId;
+        if (!userId) {
+          this.error = "Vous devez être connecté pour accéder à cette page.";
+          this.loading = false;
+          return;
+        }
+        
+        // Récupérer les cartes de l'utilisateur
+        const response = await axios.get(`/card/api/cards/user/${userId}`);
+        this.userCards = response.data;
+        
+        console.log('Cartes de l\'utilisateur:', this.userCards);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des cartes:', error);
+        this.error = "Impossible de charger vos cartes. Veuillez réessayer plus tard.";
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    selectCard(card) {
+      this.selectedCard = card;
+      this.price = card.price || null;
+      this.priceError = '';
+    },
+    
+    getCardRarityClass(rarity) {
+      const rarityClasses = {
+        'Common': 'common',
+        'Uncommon': 'uncommon',
+        'Rare': 'rare',
+        'Epic': 'epic',
+        'Legendary': 'legendary'
+      };
+      return rarityClasses[rarity] || 'common';
+    },
+    
+    validateForm() {
+      this.priceError = '';
+      
+      if (!this.selectedCard) {
+        this.error = "Veuillez sélectionner une carte à vendre.";
+        return false;
+      }
+      
+      if (!this.price || this.price <= 0) {
+        this.priceError = "Veuillez entrer un prix valide (supérieur à 0).";
+        return false;
+      }
+      
+      return true;
+    },
+    
+    async sellCard() {
+      if (!this.validateForm()) return;
+      
+      this.isSubmitting = true;
+      
+      try {
+        const sellerId = AuthStore.state.userId;
+        
+        const marketData = {
+          cardId: this.selectedCard.id,
+          sellerId: sellerId,
+          price: Number(this.price)
+        };
+        
+        console.log('Données de vente:', marketData);
+        
+        // Envoyer la requête de mise en vente
+        const response = await axios.post('/market/api/market/sell', marketData);
+        
+        if (response.status === 200) {
+          AuthStore.showNotification('Votre carte a été mise en vente avec succès!', 'success');
+          // Rediriger vers l'inventaire
+          this.$router.push('/inventory');
+        } else {
+          throw new Error('La mise en vente a échoué.');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la mise en vente:', error);
+        AuthStore.showNotification(
+          'Erreur lors de la mise en vente. ' + 
+          (error.response?.data?.message || 'Veuillez réessayer.'), 
+          'error'
+        );
+      } finally {
+        this.isSubmitting = false;
       }
     }
   }
-  </script>
+}
+</script>
 
 <style src="../assets/styles/SellView.css" scoped></style>
