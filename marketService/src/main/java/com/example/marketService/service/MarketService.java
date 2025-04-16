@@ -24,6 +24,7 @@ public class MarketService {
 
     // Correction ici pour utiliser nginx comme proxy inverse
     private final String cardServiceUrl = "http://nginx/card/api/cards";
+    private final String userServiceUrl = "http://nginx/user/api/users";
 
     public List<MarketDTO> getAllListings() {
         return marketRepo.findAll().stream()
@@ -92,8 +93,6 @@ public class MarketService {
         System.out.println("Carte trouvée dans le marché: " + listingOpt.isPresent());
         
         if (listingOpt.isEmpty()) {
-            // Si la carte n'est pas dans le marché, essayons quand même de mettre à jour le propriétaire
-            // Cela permet d'acheter directement une carte sans passer par le marché pour les tests
             try {
                 // Récupérer directement la carte
                 ResponseEntity<Map> getResponse = restTemplate.getForEntity(
@@ -184,7 +183,7 @@ public class MarketService {
             marketRepo.delete(listing);
 
             // Étape 4 : Enregistrer la transaction
-            transactionRepo.save(Transaction.builder()
+            Transaction transaction = transactionRepo.save(Transaction.builder()
                     .cardId(cardId)
                     .buyerId(buyerId)
                     .sellerId(listing.getSellerId())
@@ -192,8 +191,11 @@ public class MarketService {
                     .timestamp(LocalDateTime.now())
                     .build());
 
-            System.out.println("Achat réussi pour la carte: " + cardId);
+            // Étape 5 : Mettre à jour les soldes des utilisateurs
+            updateUserBalances(buyerId, listing.getSellerId(), listing.getPrice());
+
             return true;
+            
         } catch (Exception e) {
             System.err.println("Erreur lors de l'achat: " + e.getMessage());
             e.printStackTrace();
@@ -216,5 +218,98 @@ public class MarketService {
 
     public void clearAllTransactions() {
         transactionRepo.deleteAll();
+    }
+    
+    private void updateUserBalances(UUID buyerId, UUID sellerId, int price) {
+        System.out.println("Mise à jour des soldes - Acheteur: " + buyerId + ", Vendeur: " + sellerId + ", Prix: " + price);
+        
+        try {
+            // Récupérer le solde de l'acheteur
+            ResponseEntity<Map> buyerResponse = restTemplate.getForEntity(
+                    userServiceUrl + "/" + buyerId,
+                    Map.class);
+            
+            System.out.println("Réponse acheteur: " + buyerResponse.getStatusCode());
+            
+            if (buyerResponse.getStatusCode().is2xxSuccessful() && buyerResponse.getBody() != null) {
+                Map<String, Object> buyerData = buyerResponse.getBody();
+                System.out.println("Données acheteur: " + buyerData);
+                
+                // Vérifier si solde est un nombre ou une chaîne de caractères
+                int buyerSolde = 0;
+                Object soldeObj = buyerData.get("solde");
+                
+                if (soldeObj instanceof Integer) {
+                    buyerSolde = (Integer) soldeObj;
+                } else if (soldeObj instanceof Double) {
+                    buyerSolde = ((Double) soldeObj).intValue();
+                } else if (soldeObj instanceof String) {
+                    buyerSolde = Integer.parseInt((String) soldeObj);
+                }
+                
+                System.out.println("Solde actuel acheteur: " + buyerSolde);
+                
+                // Mettre à jour le solde de l'acheteur (déduire le prix)
+                int newBuyerSolde = buyerSolde - price;
+                buyerData.put("solde", newBuyerSolde);
+                System.out.println("Nouveau solde acheteur: " + newBuyerSolde);
+                
+                HttpEntity<Map<String, Object>> buyerRequest = new HttpEntity<>(buyerData);
+                ResponseEntity<Void> buyerUpdateResponse = restTemplate.exchange(
+                        userServiceUrl + "/" + buyerId,
+                        HttpMethod.PUT,
+                        buyerRequest,
+                        Void.class
+                );
+                
+                System.out.println("Mise à jour acheteur: " + buyerUpdateResponse.getStatusCode());
+            }
+            
+            if (sellerId != null) {
+                // Récupérer le solde du vendeur
+                ResponseEntity<Map> sellerResponse = restTemplate.getForEntity(
+                        userServiceUrl + "/" + sellerId,
+                        Map.class);
+                
+                System.out.println("Réponse vendeur: " + sellerResponse.getStatusCode());
+                
+                if (sellerResponse.getStatusCode().is2xxSuccessful() && sellerResponse.getBody() != null) {
+                    Map<String, Object> sellerData = sellerResponse.getBody();
+                    System.out.println("Données vendeur: " + sellerData);
+                    
+                    // Vérifier si solde est un nombre ou une chaîne de caractères
+                    int sellerSolde = 0;
+                    Object soldeObj = sellerData.get("solde");
+                    
+                    if (soldeObj instanceof Integer) {
+                        sellerSolde = (Integer) soldeObj;
+                    } else if (soldeObj instanceof Double) {
+                        sellerSolde = ((Double) soldeObj).intValue();
+                    } else if (soldeObj instanceof String) {
+                        sellerSolde = Integer.parseInt((String) soldeObj);
+                    }
+                    
+                    System.out.println("Solde actuel vendeur: " + sellerSolde);
+                    
+                    // Mettre à jour le solde du vendeur (ajouter le prix)
+                    int newSellerSolde = sellerSolde + price;
+                    sellerData.put("solde", newSellerSolde);
+                    System.out.println("Nouveau solde vendeur: " + newSellerSolde);
+                    
+                    HttpEntity<Map<String, Object>> sellerRequest = new HttpEntity<>(sellerData);
+                    ResponseEntity<Void> sellerUpdateResponse = restTemplate.exchange(
+                            userServiceUrl + "/" + sellerId,
+                            HttpMethod.PUT,
+                            sellerRequest,
+                            Void.class
+                    );
+                    
+                    System.out.println("Mise à jour vendeur: " + sellerUpdateResponse.getStatusCode());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la mise à jour des soldes : " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
