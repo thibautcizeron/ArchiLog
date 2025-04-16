@@ -170,44 +170,37 @@ export default {
     },
     
     async sellCard() {
-      if (!this.validateForm()) return;
+    if (!this.validateForm()) return;
+    
+    this.isSubmitting = true;
+    
+    try {
+      const cardId = this.selectedCard.id;
       
-      this.isSubmitting = true;
+      // Utilisation du paramètre de chemin comme défini dans votre back-end
+      const response = await axios.post(`/market/api/market/sell/${cardId}`);
       
-      try {
-        const sellerId = AuthStore.state.userId;
-        
-        const marketData = {
-          cardId: this.selectedCard.id,
-          sellerId: sellerId,
-          price: Number(this.price)
-        };
-        
-        console.log('Données de vente:', marketData);
-        
-        // Envoyer la requête de mise en vente
-        const response = await axios.post('/market/api/market/sell', marketData);
-        
-        if (response.status === 200) {
-          AuthStore.showNotification('Votre carte a été mise en vente avec succès!', 'success');
-          // Rediriger vers l'inventaire
-          this.$router.push('/inventory');
-        } else {
-          throw new Error('La mise en vente a échoué.');
-        }
-      } catch (error) {
-        console.error('Erreur lors de la mise en vente:', error);
-        AuthStore.showNotification(
-          'Erreur lors de la mise en vente. ' + 
-          (error.response?.data?.message || 'Veuillez réessayer.'), 
-          'error'
-        );
-      } finally {
-        this.isSubmitting = false;
+      if (response.status === 200) {
+        AuthStore.showNotification('Votre carte a été mise en vente avec succès!', 'success');
+        // Rediriger vers l'inventaire
+        this.$router.push('/inventory');
+      } else {
+        throw new Error('La mise en vente a échoué.');
       }
+    } catch (error) {
+      console.error('Erreur lors de la mise en vente:', error);
+      AuthStore.showNotification(
+        'Erreur lors de la mise en vente. ' + 
+        (error.response?.data || 'Veuillez réessayer.'), 
+        'error'
+      );
+    } finally {
+      this.isSubmitting = false;
     }
   }
 }
+}
+
 </script>
 
 <style src="../assets/styles/SellView.css" scoped></style>

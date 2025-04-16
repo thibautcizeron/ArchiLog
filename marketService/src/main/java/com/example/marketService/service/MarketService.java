@@ -22,188 +22,165 @@ public class MarketService {
     private final TransactionRepository transactionRepo;
     private final RestTemplate restTemplate;
 
-    // Correction ici pour utiliser nginx comme proxy inverse
     private final String cardServiceUrl = "http://nginx/card/api/cards";
     private final String userServiceUrl = "http://nginx/user/api/users";
 
+    /**
+     * Récupère toutes les annonces du marché avec les détails des cartes
+     */
     public List<MarketDTO> getAllListings() {
-        return marketRepo.findAll().stream()
-                .map(c -> new MarketDTO(c.getCardId(), c.getSellerId(), c.getPrice()))
-                .toList();
+        List<MarketDTO> enrichedListings = new ArrayList<>();
+        
+        for (Market listing : marketRepo.findAll()) {
+            UUID cardId = listing.getCardId();
+            UUID sellerId = listing.getSellerId();
+            int price = listing.getPrice();
+            
+            // Enrichir avec les données de la carte si nécessaire
+            Map<String, Object> cardData = getCardData(cardId);
+            // Utiliser uniquement les informations sûres et nécessaires
+            
+            enrichedListings.add(new MarketDTO(cardId, sellerId, price));
+        }
+        
+        return enrichedListings;
     }
 
-    public boolean sellCard(MarketDTO marketDTO) {
+    /**
+     * Met une carte en vente sur le marché
+     * Vérifie que l'utilisateur est bien propriétaire de la carte
+     */
+    public String sellCard(UUID cardId) {
         try {
-            // Vérifier si la carte est déjà dans le marché
-            Optional<Market> existing = marketRepo.findByCardId(marketDTO.cardId());
-            if (existing.isPresent()) {
-                System.out.println("Carte déjà dans le marché: " + marketDTO.cardId());
-                return false;
-            }
-
-            // Étape 1 : Récupérer la carte existante
-            System.out.println("Récupération de la carte: " + marketDTO.cardId());
-            ResponseEntity<Map> getResponse = restTemplate.getForEntity(
-                    cardServiceUrl + "/" + marketDTO.cardId(), Map.class);
-
-            if (!getResponse.getStatusCode().is2xxSuccessful() || getResponse.getBody() == null) {
-                System.out.println("Échec de la récupération de la carte: " + getResponse.getStatusCode());
-                return false;
-            }
-
-            Map<String, Object> cardData = getResponse.getBody();
-            cardData.put("userId", null); // Mettre userId à null
-
-            // Étape 2 : Envoyer la mise à jour
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(cardData);
-            ResponseEntity<Void> updateResponse = restTemplate.exchange(
-                    cardServiceUrl + "/" + marketDTO.cardId(),
-                    HttpMethod.PUT,
-                    request,
-                    Void.class
-            );
-
-            if (!updateResponse.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Échec de la mise à jour de la carte: " + updateResponse.getStatusCode());
-                return false;
-            }
-
-            // Étape 3 : Sauvegarder l'annonce
+            // Récupérer les détails de la carte
+            Map<String, Object> cardData = getCardData(cardId);
+            if (cardData == null) return "Carte non trouvée.";
+    
+            // Vérifier si la carte a un propriétaire
+            String userId = (String) cardData.get("userId");
+            if (userId == null) return "Carte non possédée.";
+    
+            // Récupérer les détails de l'utilisateur
+            Map<String, Object> userData = getUserData(UUID.fromString(userId));
+            if (userData == null) return "Utilisateur non trouvé.";
+    
+            // Mettre à jour la carte pour la mettre en vente (retirer le propriétaire)
+            cardData.put("userId", null); // La carte est maintenant en vente
+    
+            // Enregistrer l'annonce sur le marché
             Market listing = Market.builder()
-                    .cardId(marketDTO.cardId())
-                    .sellerId(marketDTO.sellerId())
-                    .price(marketDTO.price())
+                    .cardId(cardId)
+                    .sellerId(UUID.fromString(userId))
+                    .price(extractCardPrice(cardData)) // Prix à définir ici
                     .build();
-
             marketRepo.save(listing);
-            System.out.println("Mise en vente réussie pour la carte: " + marketDTO.cardId());
-            return true;
+    
+            // Sauvegarder les modifications
+            updateCard(cardId, cardData);
+    
+            return "Carte mise en vente avec succès.";
         } catch (Exception e) {
-            System.err.println("Erreur lors de la mise en vente: " + e.getMessage());
-            e.printStackTrace();
+            return "Erreur lors de la mise en vente : " + e.getMessage();
+        }
+    }
+    
+
+    /**
+     * Permet à un utilisateur d'acheter une carte
+     * Vérifie la disponibilité et gère les transactions financières
+     */
+    public boolean buyCard(UUID cardId, UUID buyerId) {
+        if (cardId == null || buyerId == null) {
             return false;
         }
-    }
-
-    public boolean buyCard(UUID cardId, UUID buyerId) {
-        System.out.println("Tentative d'achat - cardId: " + cardId + ", buyerId: " + buyerId);
-        
-        // Vérifier si la carte est dans le marché
-        Optional<Market> listingOpt = marketRepo.findByCardId(cardId);
-        System.out.println("Carte trouvée dans le marché: " + listingOpt.isPresent());
-        
-        if (listingOpt.isEmpty()) {
-            try {
-                // Récupérer directement la carte
-                ResponseEntity<Map> getResponse = restTemplate.getForEntity(
-                        cardServiceUrl + "/" + cardId, Map.class);
-
-                if (!getResponse.getStatusCode().is2xxSuccessful() || getResponse.getBody() == null) {
-                    System.out.println("Échec de la récupération de la carte (hors marché): " + getResponse.getStatusCode());
-                    return false;
-                }
-
-                Map<String, Object> cardData = getResponse.getBody();
-                
-                // Vérifier si la carte est déjà possédée
-                if (cardData.get("userId") != null) {
-                    System.out.println("La carte est déjà possédée par un utilisateur: " + cardData.get("userId"));
-                    return false;
-                }
-                
-                // Mettre à jour le propriétaire
-                cardData.put("userId", buyerId.toString());
-
-                // Envoyer la mise à jour
-                HttpEntity<Map<String, Object>> request = new HttpEntity<>(cardData);
-                ResponseEntity<Void> updateResponse = restTemplate.exchange(
-                        cardServiceUrl + "/" + cardId,
-                        HttpMethod.PUT,
-                        request,
-                        Void.class
-                );
-
-                if (!updateResponse.getStatusCode().is2xxSuccessful()) {
-                    System.out.println("Échec de la mise à jour du propriétaire (hors marché): " + updateResponse.getStatusCode());
-                    return false;
-                }
-
-                // Enregistrer une transaction directe
-                int price = cardData.containsKey("price") ? 
-                        (cardData.get("price") instanceof Integer ? (Integer)cardData.get("price") : 0) : 0;
-                
-                transactionRepo.save(Transaction.builder()
-                        .cardId(cardId)
-                        .buyerId(buyerId)
-                        .sellerId(null) // Pas de vendeur pour un achat direct
-                        .price(price)
-                        .timestamp(LocalDateTime.now())
-                        .build());
-                
-                System.out.println("Achat direct réussi pour la carte: " + cardId);
-                return true;
-            } catch (Exception e) {
-                System.err.println("Erreur lors de l'achat direct: " + e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
+    
+        // Vérifier le solde de l'utilisateur avant tout
+        Map<String, Object> buyerData = getUserData(buyerId);
+        if (buyerData == null) {
+            return false;
         }
-
-        // Procéder à l'achat normal via le marché
-        Market listing = listingOpt.get();
-
+    
+        int buyerBalance = extractUserBalance(buyerData);
+    
+        // Vérifier si la carte est dans le marché
+        Optional<Market> marketListing = marketRepo.findByCardId(cardId);
+        UUID sellerId = null;
+        int price = 0;
+    
         try {
-            // Étape 1 : Récupérer la carte existante
-            ResponseEntity<Map> getResponse = restTemplate.getForEntity(
-                    cardServiceUrl + "/" + listing.getCardId(), Map.class);
-
-            if (!getResponse.getStatusCode().is2xxSuccessful() || getResponse.getBody() == null) {
-                System.out.println("Échec de la récupération de la carte: " + getResponse.getStatusCode());
-                return false;
+            // Récupérer les données de la carte
+            Map<String, Object> cardData = getCardData(cardId);
+            if (cardData == null) return false;
+    
+            // Traiter différemment selon si c'est une carte du marché ou non
+            if (marketListing.isPresent()) {
+                // Achat via marché
+                Market listing = marketListing.get();
+                sellerId = listing.getSellerId();
+                price = listing.getPrice();
+    
+                // Vérifier que l'acheteur a assez d'argent
+                if (buyerBalance < price) {
+                    return false;
+                }
+    
+                // Effectuer la transaction (mettre à jour les soldes)
+                updateUserBalances(buyerId, sellerId, price);
+    
+                // Mettre à jour la carte : changer le propriétaire (acheteur B)
+                cardData.put("userId", buyerId.toString());
+                updateCard(cardId, cardData);
+    
+                // Supprimer l'annonce du marché, car la carte a été achetée
+                marketRepo.delete(marketListing.get());
+            } else {
+                // Achat direct (carte sans propriétaire)
+                if (cardData.get("userId") != null) {
+                    return false; // La carte a un propriétaire, impossible d'acheter
+                }
+    
+                // Utiliser le prix de base pour l'achat direct
+                price = extractCardPrice(cardData);
+    
+                // Vérifier que l'acheteur a assez d'argent
+                if (buyerBalance < price) {
+                    return false;
+                }
+    
+                // Mettre à jour la carte et l'utilisateur
+                cardData.put("userId", buyerId.toString());
+                updateCard(cardId, cardData);
+    
+                // Déduire l'argent du compte de l'acheteur
+                buyerData.put("solde", buyerBalance - price);
+                updateUserData(buyerId, buyerData);
             }
-
-            Map<String, Object> cardData = getResponse.getBody();
-            cardData.put("userId", buyerId.toString()); // Mettre à jour le propriétaire
-
-            // Étape 2 : Envoyer la mise à jour avec tous les champs
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(cardData);
-            ResponseEntity<Void> updateResponse = restTemplate.exchange(
-                    cardServiceUrl + "/" + listing.getCardId(),
-                    HttpMethod.PUT,
-                    request,
-                    Void.class
-            );
-
-            if (!updateResponse.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Échec de la mise à jour du propriétaire: " + updateResponse.getStatusCode());
-                return false;
-            }
-
-            // Étape 3 : Supprimer l'annonce du marché
-            marketRepo.delete(listing);
-
-            // Étape 4 : Enregistrer la transaction
-            Transaction transaction = transactionRepo.save(Transaction.builder()
+    
+            // Enregistrer la transaction
+            transactionRepo.save(Transaction.builder()
                     .cardId(cardId)
                     .buyerId(buyerId)
-                    .sellerId(listing.getSellerId())
-                    .price(listing.getPrice())
+                    .sellerId(sellerId)
+                    .price(price)
                     .timestamp(LocalDateTime.now())
                     .build());
-
-            // Étape 5 : Mettre à jour les soldes des utilisateurs
-            updateUserBalances(buyerId, listing.getSellerId(), listing.getPrice());
-
+    
             return true;
-            
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'achat: " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
+    
+    
 
+    /**
+     * Récupère l'historique des transactions d'un utilisateur
+     */
     public List<TransactionDTO> getUserTransactions(UUID userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        
         return transactionRepo.findByBuyerIdOrSellerId(userId, userId)
                 .stream()
                 .map(t -> new TransactionDTO(
@@ -216,100 +193,143 @@ public class MarketService {
                 .toList();
     }
 
+    /**
+     * Supprime toutes les transactions (fonction administrative)
+     */
     public void clearAllTransactions() {
         transactionRepo.deleteAll();
     }
     
-    private void updateUserBalances(UUID buyerId, UUID sellerId, int price) {
-        System.out.println("Mise à jour des soldes - Acheteur: " + buyerId + ", Vendeur: " + sellerId + ", Prix: " + price);
-        
+    /**
+     * Récupère les données d'une carte depuis le service de cartes
+     */
+    private Map<String, Object> getCardData(UUID cardId) {
         try {
-            // Récupérer le solde de l'acheteur
-            ResponseEntity<Map> buyerResponse = restTemplate.getForEntity(
-                    userServiceUrl + "/" + buyerId,
-                    Map.class);
-            
-            System.out.println("Réponse acheteur: " + buyerResponse.getStatusCode());
-            
-            if (buyerResponse.getStatusCode().is2xxSuccessful() && buyerResponse.getBody() != null) {
-                Map<String, Object> buyerData = buyerResponse.getBody();
-                System.out.println("Données acheteur: " + buyerData);
-                
-                // Vérifier si solde est un nombre ou une chaîne de caractères
-                int buyerSolde = 0;
-                Object soldeObj = buyerData.get("solde");
-                
-                if (soldeObj instanceof Integer) {
-                    buyerSolde = (Integer) soldeObj;
-                } else if (soldeObj instanceof Double) {
-                    buyerSolde = ((Double) soldeObj).intValue();
-                } else if (soldeObj instanceof String) {
-                    buyerSolde = Integer.parseInt((String) soldeObj);
-                }
-                
-                System.out.println("Solde actuel acheteur: " + buyerSolde);
-                
-                // Mettre à jour le solde de l'acheteur (déduire le prix)
+            ResponseEntity<Map> response = restTemplate.getForEntity(
+                    cardServiceUrl + "/" + cardId, Map.class);
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                return null;
+            }
+            return response.getBody();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Récupère les données d'un utilisateur depuis le service utilisateur
+     */
+    private Map<String, Object> getUserData(UUID userId) {
+        try {
+            ResponseEntity<Map> response = restTemplate.getForEntity(
+                    userServiceUrl + "/" + userId, Map.class);
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                return null;
+            }
+            return response.getBody();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Met à jour les données d'une carte
+     */
+    private boolean updateCard(UUID cardId, Map<String, Object> cardData) {
+        try {
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(cardData);
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    cardServiceUrl + "/" + cardId,
+                    HttpMethod.PUT,
+                    request,
+                    Void.class);
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Met à jour les données d'un utilisateur
+     */
+    private boolean updateUserData(UUID userId, Map<String, Object> userData) {
+        try {
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(userData);
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    userServiceUrl + "/" + userId,
+                    HttpMethod.PUT,
+                    request,
+                    Void.class);
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Extrait le prix d'une carte de manière sécurisée
+     */
+    private int extractCardPrice(Map<String, Object> cardData) {
+        if (cardData == null || !cardData.containsKey("price")) return 0;
+        Object price = cardData.get("price");
+        
+        if (price instanceof Integer) return (Integer) price;
+        if (price instanceof Double) return ((Double) price).intValue();
+        if (price instanceof String) {
+            try {
+                return Integer.parseInt((String) price);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * Extrait le solde d'un utilisateur de manière sécurisée
+     */
+    private int extractUserBalance(Map<String, Object> userData) {
+        if (userData == null || !userData.containsKey("solde")) return 0;
+        Object solde = userData.get("solde");
+        
+        if (solde instanceof Integer) return (Integer) solde;
+        if (solde instanceof Double) return ((Double) solde).intValue();
+        if (solde instanceof String) {
+            try {
+                return Integer.parseInt((String) solde);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    
+    /**
+     * Met à jour les soldes des utilisateurs lors d'une transaction
+     */
+    private void updateUserBalances(UUID buyerId, UUID sellerId, int price) {
+        try {
+            // Mettre à jour le solde de l'acheteur
+            Map<String, Object> buyerData = getUserData(buyerId);
+            if (buyerData != null) {
+                int buyerSolde = extractUserBalance(buyerData);
                 int newBuyerSolde = buyerSolde - price;
                 buyerData.put("solde", newBuyerSolde);
-                System.out.println("Nouveau solde acheteur: " + newBuyerSolde);
-                
-                HttpEntity<Map<String, Object>> buyerRequest = new HttpEntity<>(buyerData);
-                ResponseEntity<Void> buyerUpdateResponse = restTemplate.exchange(
-                        userServiceUrl + "/" + buyerId,
-                        HttpMethod.PUT,
-                        buyerRequest,
-                        Void.class
-                );
-                
-                System.out.println("Mise à jour acheteur: " + buyerUpdateResponse.getStatusCode());
+                updateUserData(buyerId, buyerData);
             }
             
+            // Mettre à jour le solde du vendeur
             if (sellerId != null) {
-                // Récupérer le solde du vendeur
-                ResponseEntity<Map> sellerResponse = restTemplate.getForEntity(
-                        userServiceUrl + "/" + sellerId,
-                        Map.class);
-                
-                System.out.println("Réponse vendeur: " + sellerResponse.getStatusCode());
-                
-                if (sellerResponse.getStatusCode().is2xxSuccessful() && sellerResponse.getBody() != null) {
-                    Map<String, Object> sellerData = sellerResponse.getBody();
-                    System.out.println("Données vendeur: " + sellerData);
-                    
-                    // Vérifier si solde est un nombre ou une chaîne de caractères
-                    int sellerSolde = 0;
-                    Object soldeObj = sellerData.get("solde");
-                    
-                    if (soldeObj instanceof Integer) {
-                        sellerSolde = (Integer) soldeObj;
-                    } else if (soldeObj instanceof Double) {
-                        sellerSolde = ((Double) soldeObj).intValue();
-                    } else if (soldeObj instanceof String) {
-                        sellerSolde = Integer.parseInt((String) soldeObj);
-                    }
-                    
-                    System.out.println("Solde actuel vendeur: " + sellerSolde);
-                    
-                    // Mettre à jour le solde du vendeur (ajouter le prix)
+                Map<String, Object> sellerData = getUserData(sellerId);
+                if (sellerData != null) {
+                    int sellerSolde = extractUserBalance(sellerData);
                     int newSellerSolde = sellerSolde + price;
                     sellerData.put("solde", newSellerSolde);
-                    System.out.println("Nouveau solde vendeur: " + newSellerSolde);
-                    
-                    HttpEntity<Map<String, Object>> sellerRequest = new HttpEntity<>(sellerData);
-                    ResponseEntity<Void> sellerUpdateResponse = restTemplate.exchange(
-                            userServiceUrl + "/" + sellerId,
-                            HttpMethod.PUT,
-                            sellerRequest,
-                            Void.class
-                    );
-                    
-                    System.out.println("Mise à jour vendeur: " + sellerUpdateResponse.getStatusCode());
+                    updateUserData(sellerId, sellerData);
                 }
             }
         } catch (Exception e) {
-            System.err.println("Erreur lors de la mise à jour des soldes : " + e.getMessage());
-            e.printStackTrace();
+            // Enregistrer l'erreur mais ne pas interrompre le processus
         }
     }
 }

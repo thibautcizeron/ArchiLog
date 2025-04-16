@@ -119,28 +119,25 @@ export default {
     }
   },
   mounted() {
-    this.fetchCards();
-
-    console.log('--- STORE AUTH ---');
-    console.log('isLoggedIn:', authStore.state.isLoggedIn);
-    console.log('username:', authStore.state.username);
-    console.log('userId:', authStore.state.userId);
-    console.log('notification:', authStore.state.notification);
+    this.fetchUserCards();
   },
   methods: {
-    async fetchCards() {
+    async fetchUserCards() {
+      this.loading = true;
+      this.error = null;
+      
       try {
-        const response = await axios.get('/card/api/cards');
-        console.log('Cartes récupérées depuis le backend :', response.data);
-        this.allItems = response.data.map(card => ({
-          name: card.name,
-          category: card.type,
-          price: card.price,
-          status: card.status,
-          color: card.color || '#ccc'
-        }));
+        const userId = authStore.state.userId;
+        // Récupérer les cartes de l'utilisateur
+        const response = await axios.get(`/card/api/cards/user/${userId}`);
+        this.allItems  = response.data;
+        
+        console.log('Cartes de l\'utilisateur:', this.userCards);
       } catch (error) {
-        console.error('Erreur lors de la récupération des cartes :', error);
+        console.error('Erreur lors de la récupération des cartes:', error);
+        this.error = "Impossible de charger vos cartes. Veuillez réessayer plus tard.";
+      } finally {
+        this.loading = false;
       }
     },
     getCategoryName(category) {
