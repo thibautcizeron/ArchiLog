@@ -31,23 +31,13 @@ public class MarketController {
     }
 
     @PostMapping("/buy/{cardId}")
-    public ResponseEntity<?> buyCard(
-            @PathVariable UUID cardId,
-            @RequestParam("buyerId") UUID buyerId) {
-        try {
-            boolean success = marketService.buyCard(cardId, buyerId);
-
-            if (success) {
-                return ResponseEntity.ok(Map.of("message", "Purchase successful"));
-            } else {
-                return ResponseEntity.badRequest().body(Map.of("message", "Failed to complete purchase"));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid request: " + e.getMessage()));
-        }
+    public ResponseEntity<Void> buyCard(@PathVariable UUID cardId, @RequestParam UUID buyerId) {
+        boolean success = marketService.buyCard(cardId, buyerId);
+        System.out.println("Résultat de l'achat - cardId: " + cardId + ", success: " + success);
+        return success
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-
-
 
     @GetMapping("/transactions/{userId}")
     public List<TransactionDTO> getUserTransactions(@PathVariable UUID userId) {

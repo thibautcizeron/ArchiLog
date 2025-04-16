@@ -205,36 +205,43 @@ export default {
     },
     
     async buyCard(card) {
-    console.log('Tentative d\'achat de la carte:', card);
-    
-    
-    try {
-      const response = await fetch('/market/api/market/buy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          cardId: card.id,
-          userId: AuthStore.state.userId
-        })
-      });
-
-
+      console.log('Tentative d\'achat de la carte:', card);
       
-      if (response.ok) {
-        alert(`Achat de "${card.name}" réussi !`);
-        this.loadAvailableCards(); 
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        alert(`Échec de l'achat de "${card.name}". ${errorData.message || 'Veuillez réessayer.'}`);
+      try {
+        const userId = AuthStore.state.userId;
+        if (!userId) {
+          alert('Vous devez être connecté pour acheter une carte.');
+          return;
+        }
+        
+        console.log(`Envoi de la requête d'achat - cardId: ${card.id}, buyerId: ${userId}`);
+        
+        // Utiliser fetch avec plus d'options pour le débogage
+        const response = await fetch(`/market/api/market/buy/${card.id}?buyerId=${userId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        console.log('Statut de la réponse:', response.status);
+        
+        // Tentative de lire le corps de la réponse, même en cas d'erreur
+        const responseText = await response.text();
+        console.log('Corps de la réponse:', responseText);
+        
+        if (response.ok) {
+          alert(`Achat de "${card.name}" réussi !`);
+          this.loadAvailableCards();
+        } else {
+          alert(`Échec de l'achat de "${card.name}". Code d'erreur: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'achat:', error);
+        alert('Une erreur est survenue lors de l\'achat. Veuillez réessayer plus tard.');
       }
-    } catch (error) {
-      console.error('Erreur lors de l\'achat:', error);
-      alert('Une erreur est survenue lors de l\'achat. Veuillez réessayer plus tard.');
-    }
-  },
-      
+    },
+        
     validateCard(card) {
       if (!card.id) {
         console.warn('Carte sans ID détectée:', card);
