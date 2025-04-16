@@ -30,14 +30,13 @@ public class MarketController {
                 : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @PostMapping("/buy")  
-    public ResponseEntity<?> buyCard(@RequestBody Map<String, Object> request) {
+    @PostMapping("/buy/{cardId}")
+    public ResponseEntity<?> buyCard(
+            @PathVariable UUID cardId,
+            @RequestParam("buyerId") UUID buyerId) {
         try {
-            UUID cardId = UUID.fromString(request.get("cardId").toString());
-            UUID buyerId = UUID.fromString(request.get("userId").toString());
-            
             boolean success = marketService.buyCard(cardId, buyerId);
-            
+
             if (success) {
                 return ResponseEntity.ok(Map.of("message", "Purchase successful"));
             } else {
@@ -47,6 +46,8 @@ public class MarketController {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid request: " + e.getMessage()));
         }
     }
+
+
 
     @GetMapping("/transactions/{userId}")
     public List<TransactionDTO> getUserTransactions(@PathVariable UUID userId) {
